@@ -1,1 +1,9 @@
 ---------- 12-10-2023 -----------------
+
+project setup
+login page UI
+
+
+---------- 13-10-2023 -----------------
+forget passwort UI
+reset passwort UI

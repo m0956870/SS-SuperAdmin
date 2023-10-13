@@ -1,4 +1,3 @@
-import "./Error.css";
 import React from "react";
 
 import error from "../../images/error.gif";

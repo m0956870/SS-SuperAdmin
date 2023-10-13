@@ -10,7 +10,7 @@ import ForgetPassword from "./components/Auth/ForgetPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
 
 import Error from "./components/Error/Error";
-import Home2new from "./components/Home/Home2new";
+import Home from "./components/Home/Home";
 
 // reducer
 import { reducer, initialState } from "./reducer/adminReducer";
@@ -29,9 +29,9 @@ function App() {
           <Route path="/resetpassword" element={<ResetPassword />}></Route> 
           <Route path="/error" element={<Error />}></Route>
 
-          <Route path="/" element={<Home2new />}></Route>
-          <Route path="/:route" element={<Home2new />}></Route>
-          <Route path="/:route/:id" element={<Home2new />}></Route>
+          <Route path="/" element={<Home />}></Route>
+          <Route path="/:route" element={<Home />}></Route>
+          <Route path="/:route/:id" element={<Home />}></Route>
         </Routes>
       </AdminContext.Provider>
     </>

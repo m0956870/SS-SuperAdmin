@@ -23,7 +23,7 @@ import { getProfile } from '../../api/auth';
 import Sidebar from '../../common/Sidebar/Sidebar.jsx';
 export let cid;
 
-export default function ResponsiveDrawer(props) {
+export default function Home(props) {
     const [drawerWidth, setdrawerWidth] = useState(200)
     const [hamMargin, sethamMargin] = useState("13.5rem")
     const { state, dispatch } = React.useContext(AdminContext);
@@ -65,12 +65,8 @@ export default function ResponsiveDrawer(props) {
 
     const [anchorEl, setAnchorEl] = useState(null);
     const openAcc = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+    const handleClick = (event) => setAnchorEl(event.currentTarget);
+    const handleClose = () => setAnchorEl(null);
 
     const logoutFunc = () => {
         setAnchorEl(null);
@@ -82,12 +78,9 @@ export default function ResponsiveDrawer(props) {
 
     const getProfileFunc = async () => {
         let res = await getProfile();
-        if (res.data.status) {
-            dispatch({ type: "ADMIN", payload: { ...state, result: res.data.result[0] }, });
-        } else {
-            navigate("/login")
-        }
-    };
+        if (res.data.status) dispatch({ type: "ADMIN", payload: { ...state, result: res.data.result[0] }, });
+        else navigate("/login");
+    }
 
     const changeWidth = () => {
         if (drawerWidth == 200) {
@@ -106,9 +99,7 @@ export default function ResponsiveDrawer(props) {
         position: 'relative',
         borderRadius: theme.shape.borderRadius,
         backgroundColor: alpha(theme.palette.common.white, 0.15),
-        '&:hover': {
-            backgroundColor: alpha(theme.palette.common.white, 0.25),
-        },
+        '&:hover': { backgroundColor: alpha(theme.palette.common.white, 0.25), },
         marginLeft: 0,
         marginRight: 6,
         width: '100%',
@@ -141,21 +132,14 @@ export default function ResponsiveDrawer(props) {
             color: "gray",
             [theme.breakpoints.up('sm')]: {
                 width: '12ch',
-                '&:focus': {
-                    width: '20ch',
-                },
+                '&:focus': { width: '20ch', },
             },
         },
     }));
 
     return (
-        <Box sx={{
-            display: 'flex'
-        }}>
-            <AppBar
-                position="fixed"
-                sx={{ paddingRight: "0 !important" }}
-            >
+        <Box sx={{ display: 'flex' }}>
+            <AppBar position="fixed" sx={{ paddingRight: "0 !important" }}>
                 <div className="main">
                     <div className="navbar">
                         <div onClick={() => changeWidth()} className="hamburger_menu" style={{ marginLeft: `${hamMargin}`, color: "#000", transition: "all 0.3s ease-in-out" }}>
@@ -175,28 +159,21 @@ export default function ResponsiveDrawer(props) {
                             </Toolbar>
                         </div>
                         <div className="user_info">
-                            <Search>
+                            {/* <Search>
                                 <SearchIconWrapper>
                                     <SearchIcon />
                                 </SearchIconWrapper>
-                                <StyledInputBase
-                                    placeholder="Search…"
-                                    inputProps={{ 'aria-label': 'search' }}
-                                />
-                            </Search>
-                            <div className='appbar_plus_icon'>
+                                <StyledInputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
+                            </Search> */}
+                            {/* <div className='appbar_plus_icon'>
                                 <Icon className="emp_grp_icons">
                                     <GoPlus style={{ color: "var(--main-color)" }} />
                                 </Icon>
                                 <PlusIconContainer />
-                            </div>
+                            </div> */}
                             {state && (
                                 <>
-                                    <img
-                                        src={bell}
-                                        alt="notification"
-                                        onClick={() => navigate("/message")}
-                                    />
+                                    <img src={bell} alt="notification" onClick={() => navigate("/message")} />
                                     <Avatar
                                         alt="Profile Pic"
                                         src={state?.result?.profileImage}
@@ -211,24 +188,16 @@ export default function ResponsiveDrawer(props) {
                                         anchorEl={anchorEl}
                                         open={openAcc}
                                         onClose={handleClose}
-                                        MenuListProps={{
-                                            "aria-labelledby": "basic-button",
-                                        }}
+                                        MenuListProps={{ "aria-labelledby": "basic-button", }}
                                         sx={{ position: "absolute" }}
                                     >
                                         <MenuItem onClick={handleClose}>
-                                            <NavLink
-                                                style={{ textDecoration: "none", color: "#000" }}
-                                                to="/profile"
-                                            >
+                                            <NavLink style={{ textDecoration: "none", color: "#000" }} to="/profile">
                                                 Profile
                                             </NavLink>
                                         </MenuItem>
                                         <MenuItem onClick={handleClose}>
-                                            <NavLink
-                                                style={{ textDecoration: "none", color: "#000" }}
-                                                to="/change_password"
-                                            >
+                                            <NavLink style={{ textDecoration: "none", color: "#000" }} to="/change_password" >
                                                 Change Password
                                             </NavLink>
                                         </MenuItem>
@@ -241,41 +210,25 @@ export default function ResponsiveDrawer(props) {
                     </div>
                 </div>
             </AppBar>
-            <Box
-                component="nav"
-                sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 }, transition: "all 0.3s ease-in-out" }}
-                aria-label="mailbox folders"
-            >
+            <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 }, transition: "all 0.3s ease-in-out" }} aria-label="mailbox folders" >
                 <Drawer
                     container={container}
                     variant="temporary"
                     open={mobileOpen}
                     onClose={handleDrawerToggle}
-                    ModalProps={{
-                        keepMounted: true,
-                    }}
-                    sx={{
-                        display: { xs: 'block', sm: 'none' }, backgroundColor: "var(--main-color)",
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, transition: "all 0.3s ease-in-out" },
-                    }}
+                    ModalProps={{ keepMounted: true, }}
+                    sx={{ display: { xs: 'block', sm: 'none' }, backgroundColor: "var(--main-color)", '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, transition: "all 0.3s ease-in-out" }, }}
                 >
                     <Sidebar open={open} />
                 </Drawer>
-                <Drawer
-                    variant="permanent"
-                    sx={{
-                        display: { xs: 'none', sm: 'block' }, backgroundColor: "var(--main-color)",
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, transition: "all 0.3s ease-in-out" },
-                    }}
-                    open
-                >
+                <Drawer open variant="permanent" sx={{ display: { xs: 'none', sm: 'block' }, backgroundColor: "var(--main-color)", '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, transition: "all 0.3s ease-in-out" }, }}>
                     <Sidebar open={open} />
                 </Drawer>
             </Box>
             <Box component="main" sx={{ flexGrow: 1, marginTop: "4rem", backgroundColor: "#f9f9fa" }} >
                 <div id={`${open === true ? "open" : "close"}`}>
                     {routeArray.map((item) => route === item.params && (
-                        <div key={item.params} >
+                        <div key={item.params} className='container' >
                             {item.component}
                         </div>
                     ))}

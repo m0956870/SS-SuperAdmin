@@ -9,8 +9,10 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 
 // Images
 import logo_white from "../../images/logo_white.png";
-import dashboard from "../../images/dashboard.png";
-import dashboard_white from "../../images/dashboard_white.png";
+import company_lisitng_img from "../../images/Company listing.png";
+import user_img from "../../images/user.png";
+import plan_img from "../../images/plan.png";
+import action_img from "../../images/action.png";
 
 const Sidebar = ({ open }) => {
   const navigate = useNavigate();
@@ -19,13 +21,46 @@ const Sidebar = ({ open }) => {
   const [menuItems, setmenuItems] = useState([
     {
       index: 1,
-      icon: dashboard,
-      icon_white: dashboard_white,
-      title: "Dashboard",
-      navigate: "dashboard",
+      icon: company_lisitng_img,
+      icon_white: company_lisitng_img,
+      title: "Company Lisitng",
+      navigate: "company_lisitng",
       show: false,
       subItems: [
-        { name: "Employee's Dashboard", link: "/dashboard" },
+        { name: "Company Lisitng", link: "/company_lisitng" },
+      ],
+    },
+    {
+      index: 2,
+      icon: user_img,
+      icon_white: user_img,
+      title: "User",
+      navigate: "user",
+      show: false,
+      subItems: [
+        { name: "User", link: "/user" },
+      ],
+    },
+    {
+      index: 3,
+      icon: plan_img,
+      icon_white: plan_img,
+      title: "Plan",
+      navigate: "plan",
+      show: false,
+      subItems: [
+        { name: "Plan", link: "/plan" },
+      ],
+    },
+    {
+      index: 4,
+      icon: action_img,
+      icon_white: action_img,
+      title: "Action",
+      navigate: "action",
+      show: false,
+      subItems: [
+        { name: "Action", link: "/action" },
       ],
     },
   ]);
