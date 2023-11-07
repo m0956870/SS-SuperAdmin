@@ -1,10 +1,10 @@
 import "../../App.css"
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import group from "../../images/group.png";
 import SearchIcon from "@mui/icons-material/Search";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useRouteError } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CircularProgress, Pagination } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -20,8 +20,9 @@ import { BsFilterLeft } from "react-icons/bs"
 import { saveToPdf } from "../../utils/saveToPdf";
 import xlsx from "json-as-xlsx";
 import { AdminContext } from "../../App";
+import { fetchAllUsers } from "../../api/userAPI";
 
-const CompanyListing = () => {
+const User = () => {
     // const {state} = useContext(AdminContext)
     // console.log(state)
     const navigate = useNavigate();
@@ -32,7 +33,6 @@ const CompanyListing = () => {
     const [pdfBtnLoading, setpdfBtnLoading] = useState(false)
 
     const [search, setSearch] = useState("");
-    const [activeTab, setactiveTab] = useState("SFA ( Sales for Automation )")
 
     const [allData, setallData] = useState([])
     const [pageCount, setpageCount] = useState(1);
@@ -48,19 +48,33 @@ const CompanyListing = () => {
     // useEffect(() => {
     //     getStateFunc().then((res) => setallState(res.data.result));
     // }, []);
-    // useEffect(() => {
-    //     fetchAllBeatFunc({ ...filterData, page: pageCount });
-    // }, [pageCount]);
+    useEffect(() => {
+        fetchAllUsersFunc({ ...filterData, page: pageCount });
+    }, [pageCount]);
 
-    // useEffect(() => {
-    //     if (search !== "") {
-    //         let ID = setTimeout(() => {
-    //             fetchAllBeatFunc({ ...filterData, search })
-    //         }, 1000);
+    useEffect(() => {
+        if (search !== "") {
+            let ID = setTimeout(() => {
+                fetchAllUsersFunc({ ...filterData, search })
+            }, 1000);
 
-    //         return () => clearTimeout(ID);
-    //     }
-    // }, [search]);
+            return () => clearTimeout(ID);
+        }
+    }, [search]);
+
+    const fetchAllUsersFunc = async (filterData) => {
+        setisLoading(true);
+
+        let { data } = await fetchAllUsers(filterData);
+        if (data.status) {
+            setallData(data.data);
+            settotalDataCount(data.total_count);
+            setpageLength(data.total_pages);
+        } else {
+            console.log(data.messaage)
+        }
+        setisLoading(false);
+    }
 
     const filterAndExportFunc = (type) => {
         setTimeout(() => {
@@ -84,41 +98,41 @@ const CompanyListing = () => {
     // Filter
     const [tableCols, setTableCols] = useState([
         {
-            label: 'Beat Name',
-            key: 'beatName',
+            label: 'Name',
+            key: 'first_name',
             type: "value",
             active: true,
         },
         {
-            label: 'State',
-            key: 'name',
-            type: "state_value",
-            active: true,
-        },
-        {
-            label: 'Employee',
-            key: 'employee_name',
+            label: 'Email ID',
+            key: 'email',
             type: "value",
             active: true,
         },
         {
-            label: 'Day',
+            label: 'Password',
+            key: 'password',
+            type: "value",
+            active: true,
+        },
+        {
+            label: 'Permission',
             key: "day",
             type: "value",
             active: true,
         },
-        {
-            label: 'Status',
-            key: "status",
-            type: "status",
-            active: true,
-        },
-        {
-            label: 'Action',
-            key: "abscent",
-            type: "action",
-            active: true,
-        },
+        // {
+        //     label: 'Status',
+        //     key: "status",
+        //     type: "status",
+        //     active: true,
+        // },
+        // {
+        //     label: 'Action',
+        //     key: "abscent",
+        //     type: "action",
+        //     active: true,
+        // },
     ]);
 
     let filterCols = tableCols.filter(col => col.active);
@@ -190,7 +204,7 @@ const CompanyListing = () => {
                     <div className="icon">
                         <img src={group} alt="icon" />
                     </div>
-                    <div className="title">{activeTab}</div>
+                    <div className="title">User Lisiting</div>
                 </div>
                 <div className="beat_right">
                     <div className="search">
@@ -205,28 +219,9 @@ const CompanyListing = () => {
                 </div>
             </div>
 
-            <div className="config_tab">
-                <div onClick={() => setactiveTab("SFA ( Sales for Automation )")} className={`confi_div ${activeTab === "SFA ( Sales for Automation )" ? "config_active_tab" : ""}`}
-                >
-                    SFA
-                </div>
-                <div onClick={() => setactiveTab("DMS ( Distributor Management System )")} className={`confi_div ${activeTab === "DMS ( Distributor Management System )" ? "config_active_tab" : ""}`}
-                >
-                    DMS
-                </div>
-                <div onClick={() => setactiveTab("Lead Managment")} className={`confi_div ${activeTab === "Lead Managment" ? "config_active_tab" : ""}`}
-                >
-                    Lead Managment
-                </div>
-                <div onClick={() => setactiveTab("Demo Control")} className={`confi_div ${activeTab === "Demo Control" ? "config_active_tab" : ""}`}
-                >
-                    Demo Control
-                </div>
-            </div>
-
-            <div class="tracking_tabs">
+            {/* <div class="tracking_tabs">
                 <div className="tarcking_tab_left">
-                    {/* <select
+                     <select
                         name="state"
                         className="select_btn new_state_select"
                         onChange={stateHandleInput}
@@ -236,7 +231,7 @@ const CompanyListing = () => {
                         {allState?.map((state) => (
                             <option key={state.id} value={state.id}>{state.name}</option>
                         ))}
-                    </select> */}
+                    </select> 
                     <select name="" id="">
                         <option value="">State</option>
                         <option value="">1</option>
@@ -247,57 +242,63 @@ const CompanyListing = () => {
                         <option value="">1</option>
                         <option value="">2</option>
                     </select>
-                    <div className="view_btn" /* onClick={() => fetchAllBeatFunc(filterData)}*/ >
-                        View
-                    </div>
+                    <div className="view_btn"  onClick={() => fetchAllBeatFunc(filterData)} >
+                View
+                    </div >
+                </div >
+    <div className="top_filter_section">
+        <div className="top_left_filter">
+            <div className="entry_div">Show Entries</div>
+            <select name="limit" onChange={topFilterHandleInput}  className = "limit_select" >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+            </select >
+        </div >
+    <div className="new_add_btn_top_filter" >
+        <div className="top_right_filter">
+            <div className="other_functionality_section" style={{ marginRight: 0 }}>
+                <div className="section_options" onClick={() => filterAndExportFunc("column_filter")}>
+                    <span className="filter_icon" ><BsFilterLeft size={22} /></span> Filter
                 </div>
-                <div className="top_filter_section">
-                    <div className="top_left_filter">
-                        <div className="entry_div">Show Entries</div>
-                        <select name="limit" /* onChange={topFilterHandleInput} */ className="limit_select" >
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="50">50</option>
-                        </select>
-                    </div>
-                    <div className="new_add_btn_top_filter" >
-                        <div className="top_right_filter">
-                            <div className="other_functionality_section" style={{ marginRight: 0 }}>
-                                <div className="section_options" onClick={() => filterAndExportFunc("column_filter")}>
-                                    <span className="filter_icon" ><BsFilterLeft size={22} /></span> Filter
-                                </div>
-                                <div className="section_options" onClick={() => filterAndExportFunc("export")}>
-                                    {exportBtnLoading ? <CircularProgress size={24} /> : "Export"}
-                                </div>
-                                <div className="section_options" onClick={() => filterAndExportFunc("pdf")} >
-                                    {pdfBtnLoading ? <CircularProgress size={24} /> : "PDF"}
-                                </div>
-                                <div style={{ display: filterDivExtended ? "block" : "none" }} className="col_filter_section">
-                                    {tableCols?.map((col) => (
-                                        <div className="col_filter" >
-                                            <label >
-                                                <input type="checkbox" checked={col.active} onChange={() => toogleTableCol(col.key)} />
-                                                <span onChange={() => toogleTableCol(col.key)} >{col.label}</span>
-                                            </label>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                <div className="section_options" onClick={() => filterAndExportFunc("export")}>
+                    {exportBtnLoading ? <CircularProgress size={24} /> : "Export"}
+                </div>
+                <div className="section_options" onClick={() => filterAndExportFunc("pdf")} >
+                    {pdfBtnLoading ? <CircularProgress size={24} /> : "PDF"}
+                </div>
+                <div style={{ display: filterDivExtended ? "block" : "none" }} className="col_filter_section">
+                    {tableCols?.map((col) => (
+                        <div className="col_filter" >
+                            <label >
+                                <input type="checkbox" checked={col.active} onChange={() => toogleTableCol(col.key)} />
+                                <span onChange={() => toogleTableCol(col.key)} >{col.label}</span>
+                            </label>
                         </div>
-                        <div className="add_new_side_btn" onClick={() => navigate("/add_beat")}>
-                            Add New
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </div>
+        </div>
+        <div className="add_new_side_btn" onClick={() => navigate("/add_beat")}>
+            Add New
+        </div>
+    </div>
+    </div >
+            </div > * /}
 
-            {/* table ui */}
+            
+            {/* table ui */ }
             {isLoading ? (
                 <div style={{ margin: "auto", }} >
                     <CircularProgress />
                 </div>
             ) : (
                 <div className="" ref={pdfView}>
+                    <div style={{ display: "flex", justifyContent: "flex-end" }} >
+                        <div className="user_add_new_side_btn" onClick={() => navigate("/add_beat")}>
+                            Add New
+                        </div>
+                    </div>
                     <div className="table_scroll_container">
                         <Table sx={{ minWidth: 700 }} aria-label="customized table">
                             <TableHead>
@@ -340,9 +341,10 @@ const CompanyListing = () => {
                         </div>
                     )}
                 </div>
-            )}
+            )
+            }
         </>
     )
 }
 
-export default CompanyListing
+export default User;

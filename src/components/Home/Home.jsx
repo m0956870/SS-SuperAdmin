@@ -41,7 +41,7 @@ export default function Home(props) {
     const [open, setOpen] = React.useState(true);
 
     useEffect(() => {
-        const auth = localStorage.getItem("auth");
+        const auth = localStorage.getItem("ss_auth");
         if (auth === "false" || !auth) {
             navigate("/login");
             toast.error("Please Login First!");
@@ -70,15 +70,15 @@ export default function Home(props) {
 
     const logoutFunc = () => {
         setAnchorEl(null);
-        localStorage.setItem("token", null);
-        localStorage.setItem("auth", false);
+        localStorage.setItem("ss_token", null);
+        localStorage.setItem("ss_auth", false);
         toast.success("Logout Successfully!");
         navigate("/login");
     };
 
     const getProfileFunc = async () => {
         let res = await getProfile();
-        if (res.data.status) dispatch({ type: "ADMIN", payload: { ...state, result: res.data.result[0] }, });
+        if (res.data.status) dispatch({ type: "ADMIN", payload: { ...state, user: res.data.data }, });
         else navigate("/login");
     }
 

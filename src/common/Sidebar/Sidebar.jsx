@@ -24,7 +24,7 @@ const Sidebar = ({ open }) => {
       icon: company_lisitng_img,
       icon_white: company_lisitng_img,
       title: "Company Lisitng",
-      navigate: "company_lisitng",
+      navigate: "company_listing",
       show: false,
       subItems: [
         { name: "Company Lisitng", link: "/company_lisitng" },

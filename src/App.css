@@ -249,9 +249,20 @@
   cursor: pointer;
 }
 
+.user_add_new_side_btn {
+  background-color: var(--main-color);
+  color: #fff;
+  font-size: 1rem;
+  padding: 0.6rem 2rem;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  width: 8.5rem;
+  margin-bottom: 1rem;
+}
+
 /* table ui */
 .table_scroll_container {
-  width: 79vw;
+  width: 79.4vw;
   overflow-x: scroll;
 }
 
