@@ -4,7 +4,7 @@ import group from "../../images/group.png";
 import SearchIcon from "@mui/icons-material/Search";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate, useRouteError } from "react-router-dom";
+import { NavLink, useNavigate, useRouteError } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CircularProgress, Pagination } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -14,13 +14,14 @@ import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import { tableCellClasses } from "@mui/material/TableCell";
+import { Dialog, DialogContent } from "@mui/material";
 
 import { useRef } from "react";
 import { BsFilterLeft } from "react-icons/bs"
 import { saveToPdf } from "../../utils/saveToPdf";
 import xlsx from "json-as-xlsx";
 import { AdminContext } from "../../App";
-import { fetchAllUsers } from "../../api/userAPI";
+import { fetchAllUsers, updateUser } from "../../api/userAPI";
 
 const User = () => {
     // const {state} = useContext(AdminContext)
@@ -38,6 +39,14 @@ const User = () => {
     const [pageCount, setpageCount] = useState(1);
     const [pageLength, setpageLength] = useState();
     const [totalDataCount, settotalDataCount] = useState();
+    const [showPermission, setshowPermission] = useState(false)
+    const [userPermissions, setuserPermissions] = useState([])
+    const [currentRow, setcurrentRow] = useState({})
+    const [firstRender, setFirstRender] = useState(true)
+
+    const [modulePermissionState, setmodulePermissionState] = useState(['SFA', 'DMS', 'Lead Management', 'Demo Control']);
+    const [permissionState, setpermissionState] = useState(['Edit Company', 'Delete Company', 'View Listing', 'View Password', 'Create Plan', 'View Plan', 'Create Company', 'Create User']);
+    const [actionPermissionState, setactionPermissionState] = useState(['Increase User', 'None Billed', 'Grass Period'])
 
     const [filterData, setfilterData] = useState({
         state: "",
@@ -62,16 +71,38 @@ const User = () => {
         }
     }, [search]);
 
+    useEffect(() => {
+        if (!firstRender) {
+            if (showPermission == false) {
+                if (userPermissions?.length !== currentRow?.permissions?.length) updateUserFunc()
+            }
+        }
+    }, [showPermission])
+    // console.log("userPermissions", userPermissions)
+
     const fetchAllUsersFunc = async (filterData) => {
         setisLoading(true);
 
         let { data } = await fetchAllUsers(filterData);
         if (data.status) {
+            data.data.map(user => { user.showPass = false })
             setallData(data.data);
             settotalDataCount(data.total_count);
             setpageLength(data.total_pages);
         } else {
             console.log(data.messaage)
+        }
+        setisLoading(false);
+    }
+
+    const updateUserFunc = async () => {
+        let updatedObj = { _id: currentRow._id, permissions: userPermissions }
+        let { data } = await updateUser(updatedObj);
+        if (data.status) {
+            toast.success("User permission updated successfully.")
+            fetchAllUsersFunc(filterData)
+        } else {
+            console.log(data.message)
         }
         setisLoading(false);
     }
@@ -112,13 +143,13 @@ const User = () => {
         {
             label: 'Password',
             key: 'password',
-            type: "value",
+            type: "password_value",
             active: true,
         },
         {
             label: 'Permission',
             key: "day",
-            type: "value",
+            type: "permission_value",
             active: true,
         },
         // {
@@ -163,8 +194,34 @@ const User = () => {
               /> */}
                 </StyledTableCell>
             )
+        } else if (col.type === "password_value") {
+            // return <StyledTableCell>{row[col.key]}</StyledTableCell>
+            return <StyledTableCell>******</StyledTableCell>
+        } else if (col.type === "permission_value") {
+            return (
+                <StyledTableCell>
+                    <div
+                        onClick={() => {
+                            setFirstRender(false)
+                            setcurrentRow(row)
+                            setuserPermissions(row.permissions);
+                            setshowPermission(true)
+                        }}
+                        className="action_div view_permission"
+                    >
+                        <NavLink to="">View Permissions</NavLink>
+                    </div>
+                </StyledTableCell>
+            )
+        } else return <StyledTableCell>{row[col.key]}</StyledTableCell>;
+    }
+
+    const togglePermissionFunc = (e, p) => {
+        if (e.target.checked == false) {
+            setuserPermissions(userPermissions.filter(x => x !== p));
+        } else {
+            setuserPermissions([...userPermissions, p])
         }
-        return <StyledTableCell>{row[col.key]}</StyledTableCell>;
     }
 
     // Table style
@@ -295,7 +352,7 @@ const User = () => {
             ) : (
                 <div className="" ref={pdfView}>
                     <div style={{ display: "flex", justifyContent: "flex-end" }} >
-                        <div className="user_add_new_side_btn" onClick={() => navigate("/add_beat")}>
+                        <div className="user_add_new_side_btn" onClick={() => navigate("/add_user")}>
                             Add New
                         </div>
                     </div>
@@ -341,8 +398,51 @@ const User = () => {
                         </div>
                     )}
                 </div>
-            )
-            }
+            )}
+
+            <Dialog
+                open={showPermission}
+                aria-labelledby="form-dialog-title"
+                maxWidth="xs"
+                fullWidth={true}
+                onClose={() => setshowPermission(false)}
+                className="permission_model"
+            >
+                <DialogContent className="cardpopup_content">
+                    <div className="permission_heading">Module (Permissions)</div>
+                    <hr />
+                    <div className="permission_line">
+                        {modulePermissionState.map(p => (
+                            <label >
+                                <span>{p}</span>
+                                <input type="checkbox" checked={userPermissions?.includes(p)} onChange={(e) => togglePermissionFunc(e, p)} />
+                            </label>
+                        ))}
+                    </div>
+                    <hr />
+                    <div className="permission_heading">Permissions</div>
+                    <hr />
+                    <div className="permission_line">
+                        {permissionState.map(p => (
+                            <label >
+                                <span>{p}</span>
+                                <input type="checkbox" checked={userPermissions?.includes(p)} onChange={(e) => togglePermissionFunc(e, p)} />
+                            </label>
+                        ))}
+                    </div>
+                    <hr />
+                    <div className="permission_heading">Action</div>
+                    <hr />
+                    <div className="permission_line">
+                        {actionPermissionState.map(p => (
+                            <label >
+                                <span>{p}</span>
+                                <input type="checkbox" checked={userPermissions?.includes(p)} onChange={(e) => togglePermissionFunc(e, p)} />
+                            </label>
+                        ))}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </>
     )
 }

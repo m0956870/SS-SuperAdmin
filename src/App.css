@@ -275,3 +275,91 @@
 .top_filter_section .limit_bottom_info {
   font-size: 0.9rem;
 }
+
+.action_div a {
+  color: var(--main-color);
+}
+.action_div a:hover {
+  color: #0e719d;
+}
+
+.view_permission {
+  position: relative;
+}
+
+.view_permission .permissions_section {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.cardpopup_content {
+  padding: 1rem !important;
+  width: 18rem;
+}
+
+.permission_model {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.permission_heading {
+  color: var(--main-color);
+  font-weight: 500;
+  margin: 0.2rem 0 0.4rem 0;
+}
+
+.permission_line label {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 500;
+  margin: 0.3rem;
+}
+
+/* add user */
+.add_user_section {
+  margin: 4rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.add_user_imput_container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 4rem;
+}
+
+.profile_details {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0 3rem 0;
+}
+
+.profile_details .avatar {
+  position: relative;
+}
+
+.profile_details .avatar {
+  position: relative;
+}
+
+.avatar .camera_icon {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  font-size: 3rem;
+  background-color: #fff;
+  padding: 0.5rem;
+  border-radius: 50%;
+  border: 1px solid var(--main-color);
+}
+
+.btn {
+  background-color: var(--main-color);
+  border-radius: .5rem;
+  color: #fff;
+  cursor: pointer;
+  margin: 2rem auto;
+  padding: .8rem 3rem;
+}
