@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import group from "../../images/group.png";
 import { Avatar } from '@mui/material';
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import { useLocation } from 'react-router-dom';
 
 const AddUser = () => {
+  const location = useLocation()
+  const [profilePic, setprofilePic] = useState(location.state?.image);
+  const [demoProfilePic, setdemoProfilePic] = useState();
   const [user, setuser] = useState({
     first_name: "",
     last_name: "",
@@ -12,6 +16,16 @@ const AddUser = () => {
     password: "",
     permissions: [],
   })
+
+  const handleInput = (e) => {
+    setuser({ ...user, [e.target.name]: e.target.value });
+  };
+
+  const addPicFunc = async (e) => {
+    let file = e.target.files[0];
+    setprofilePic(file);
+    setdemoProfilePic(URL.createObjectURL(file));
+  };
 
   return (
     <>
@@ -28,7 +42,7 @@ const AddUser = () => {
           <div className="avatar">
             <Avatar
               alt="Profile Pic"
-              // src={demoProfilePic || profilePic}
+              src={demoProfilePic || profilePic}
               style={{ height: "9rem", width: "9rem" }}
             // onClick={handleClick}
             />
@@ -36,7 +50,7 @@ const AddUser = () => {
               <CameraAltIcon className="camera_icon" />
               <input
                 type="file"
-                // onChange={addEmployeePic}
+                onChange={addPicFunc}
                 name="myfile"
                 accept="image/*"
                 style={{ display: "none" }}
@@ -51,7 +65,7 @@ const AddUser = () => {
               type="text"
               name="first_name"
               value={user.first_name}
-            // onChange={handleInput}
+              onChange={handleInput}
             />
             <div>
               {/* {error.email.length !== 0 && (
@@ -65,7 +79,7 @@ const AddUser = () => {
               type="text"
               name="last_name"
               value={user.last_name}
-            // onChange={handleInput}
+              onChange={handleInput}
             />
             <div>
               {/* {error.password.length !== 0 && (
@@ -79,7 +93,7 @@ const AddUser = () => {
               type="text"
               name="phone_number"
               value={user.phone_number}
-            // onChange={handleInput}
+              onChange={handleInput}
             />
             <div>
               {/* {error.email.length !== 0 && (
@@ -93,7 +107,7 @@ const AddUser = () => {
               type="text"
               name="email"
               value={user.email}
-            // onChange={handleInput}
+              onChange={handleInput}
             />
             <div>
               {/* {error.password.length !== 0 && (
@@ -107,7 +121,7 @@ const AddUser = () => {
               type="text"
               name="password"
               value={user.password}
-            // onChange={handleInput}
+              onChange={handleInput}
             />
             <div>
               {/* {error.email.length !== 0 && (
