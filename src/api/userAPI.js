@@ -17,8 +17,32 @@ export const fetchAllUsers = async (data) => {
     }
 };
 
-export const updateUser = async (obj) => {
+export const addUser = async (obj) => {
+    const fd = new FormData();
+    fd.append("first_name", obj.first_name)
+    fd.append("last_name", obj.last_name)
+    fd.append("phone_number", obj.phone_number)
+    fd.append("email", obj.email)
+    fd.append("password", obj.password)
+    fd.append("image", obj.image)
+    fd.append("permissions", JSON.stringify(obj.permissions));
 
+    const token = localStorage.getItem("ss_token");
+    let config = {
+        method: "post",
+        url: getBaseUrl() + "root/user/create_user",
+        headers: { authorization: `Bearer ${token}` },
+        data: fd,
+    };
+    try {
+        return await axios(config);
+    } catch (error) {
+        console.log(error);
+        return error.response;
+    }
+};
+
+export const updateUser = async (obj) => {
     const fd = new FormData();
     fd.append("_id", obj._id);
     fd.append("permissions", JSON.stringify(obj.permissions));

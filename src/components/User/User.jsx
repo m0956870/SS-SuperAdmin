@@ -40,7 +40,7 @@ const User = () => {
     const [pageLength, setpageLength] = useState();
     const [totalDataCount, settotalDataCount] = useState();
     const [showPermission, setshowPermission] = useState(false)
-    const [userPermissions, setuserPermissions] = useState([])
+    const [userPermissions, setuserPermissions] = useState([]);
     const [currentRow, setcurrentRow] = useState({})
     const [firstRender, setFirstRender] = useState(true)
 

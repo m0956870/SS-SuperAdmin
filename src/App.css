@@ -293,14 +293,13 @@
   right: 0;
 }
 
-.cardpopup_content {
-  padding: 1rem !important;
-  width: 18rem;
-}
-
 .permission_model {
   display: flex;
   justify-content: flex-end;
+}
+.cardpopup_content {
+  padding: 1rem !important;
+  width: 18rem;
 }
 
 .permission_heading {
@@ -314,6 +313,10 @@
   justify-content: space-between;
   font-weight: 500;
   margin: 0.3rem;
+}
+
+.permission_line label input {
+  width: 10%;
 }
 
 /* add user */
@@ -357,9 +360,16 @@
 
 .btn {
   background-color: var(--main-color);
-  border-radius: .5rem;
+  border-radius: 0.5rem;
   color: #fff;
   cursor: pointer;
   margin: 2rem auto;
-  padding: .8rem 3rem;
+  padding: 0.8rem 3rem;
+}
+
+.cardpopup_content_add_user {
+  width: 100%;
+  border: 1px solid grey;
+  padding: 0.5rem;
+  border-radius: 0.3rem;
 }
