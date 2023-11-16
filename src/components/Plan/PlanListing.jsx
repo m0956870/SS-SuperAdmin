@@ -1,5 +1,5 @@
 import "../../App.css"
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import group from "../../images/group.png";
 import SearchIcon from "@mui/icons-material/Search";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
@@ -20,8 +20,9 @@ import { BsFilterLeft } from "react-icons/bs"
 import { saveToPdf } from "../../utils/saveToPdf";
 import xlsx from "json-as-xlsx";
 import { AdminContext } from "../../App";
+import { fetchPlan } from "../../api/planAPI";
 
-const CompanyListing = () => {
+const PlanListing = () => {
     // const {state} = useContext(AdminContext)
     // console.log(state)
     const navigate = useNavigate();
@@ -39,6 +40,9 @@ const CompanyListing = () => {
     const [pageLength, setpageLength] = useState();
     const [totalDataCount, settotalDataCount] = useState();
 
+    const [deletePopup, setdeletePopup] = useState(false);
+    const [currentGroup, setcurrentGroup] = useState({});
+
     const [filterData, setfilterData] = useState({
         state: "",
         page: pageCount,
@@ -48,19 +52,36 @@ const CompanyListing = () => {
     // useEffect(() => {
     //     getStateFunc().then((res) => setallState(res.data.result));
     // }, []);
-    // useEffect(() => {
-    //     fetchAllBeatFunc({ ...filterData, page: pageCount });
-    // }, [pageCount]);
+
+    useEffect(() => {
+        fetchAllPlanFunc({ ...filterData, page: pageCount });
+    }, [pageCount]);
 
     // useEffect(() => {
     //     if (search !== "") {
     //         let ID = setTimeout(() => {
-    //             fetchAllBeatFunc({ ...filterData, search })
+    //             fetchAllPlanFunc({ ...filterData, search })
     //         }, 1000);
 
     //         return () => clearTimeout(ID);
     //     }
     // }, [search]);
+
+    console.log("allData", allData, !allData)
+
+    const fetchAllPlanFunc = async (filterData) => {
+        setisLoading(true);
+
+        let { data } = await fetchPlan(filterData);
+        if (data.status) {
+            setallData(data.data);
+            settotalDataCount(data.total_users);
+            setpageLength(data.total_pages);
+        } else {
+            console.log(data.messaage)
+        }
+        setisLoading(false);
+    }
 
     const filterAndExportFunc = (type) => {
         setTimeout(() => {
@@ -84,35 +105,47 @@ const CompanyListing = () => {
     // Filter
     const [tableCols, setTableCols] = useState([
         {
-            label: 'Beat Name',
-            key: 'beatName',
+            label: 'Plan Name',
+            key: 'plan_name',
             type: "value",
             active: true,
         },
         {
-            label: 'State',
-            key: 'name',
-            type: "state_value",
-            active: true,
-        },
-        {
-            label: 'Employee',
-            key: 'employee_name',
+            label: 'Minimum Billing Frequency',
+            key: 'billing_frequency',
             type: "value",
             active: true,
         },
         {
-            label: 'Day',
-            key: "day",
+            label: 'Modul Covered',
+            key: 'features',
             type: "value",
             active: true,
         },
         {
-            label: 'Status',
-            key: "status",
-            type: "status",
+            label: 'Cost Per User / Month',
+            key: "cost_per_user_per_month",
+            type: "value",
             active: true,
         },
+        {
+            label: 'Dicsount',
+            key: "discount",
+            type: "value",
+            active: true,
+        },
+        {
+            label: 'Minimum User Required',
+            key: "minimum_user",
+            type: "value",
+            active: true,
+        },
+        // {
+        //     label: 'Status',
+        //     key: "status",
+        //     type: "status",
+        //     active: true,
+        // },
         {
             label: 'Action',
             key: "abscent",
@@ -136,17 +169,17 @@ const CompanyListing = () => {
             return (
                 <StyledTableCell style={{ whiteSpace: "nowrap" }} >
                     {/* <BorderColorIcon
-                        onClick={() => navigate("/edit_beat", { state: row })}
+                        onClick={() => navigate("/edit_plan", { state: row })}
                         style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
-                    /> */}
-                    {/* <DeleteIcon
+                    />
+                    <DeleteIcon
                         style={{ fontSize: "1rem", color: "red", marginLeft: "0.5rem", }}
                         className="emp_grp_icons"
                         onClick={() => {
-                        setdeletePopup(true);
-                        setcurrentGroup(row);
+                            setdeletePopup(true);
+                            setcurrentGroup(row);
                         }}
-              /> */}
+                    /> */}
                 </StyledTableCell>
             )
         }
@@ -190,7 +223,7 @@ const CompanyListing = () => {
                     <div className="icon">
                         <img src={group} alt="icon" />
                     </div>
-                    <div className="title">{activeTab}</div>
+                    <div className="title">Plan Listing</div>
                 </div>
                 <div className="beat_right">
                     <div className="search">
@@ -243,7 +276,7 @@ const CompanyListing = () => {
                         <option value="">2</option>
                     </select>
                     <select name="" id="">
-                        <option value="">State</option>
+                        <option value="">Company</option>
                         <option value="">1</option>
                         <option value="">2</option>
                     </select>
@@ -284,65 +317,67 @@ const CompanyListing = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="add_new_side_btn" onClick={() => navigate("/add_beat")}>
+                        <div className="add_new_side_btn" onClick={() => navigate("/add_plan")}>
                             Add New
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
 
             {/* table ui */}
-            {isLoading ? (
-                <div style={{ margin: "auto", }} >
-                    <CircularProgress />
-                </div>
-            ) : (
-                <div className="" ref={pdfView}>
-                    <div className="table_scroll_container">
-                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                            <TableHead>
-                                <TableRow>
-                                    <StyledTableCell>S. No.</StyledTableCell>
-                                    {filterCols?.map(col => <StyledTableCell>{col.label}</StyledTableCell>)}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {allData?.map((row, i) => (
-                                    <StyledTableRow key={i} >
-                                        <StyledTableCell>{((pageCount * filterData.limit) - filterData.limit) + (i + 1)}</StyledTableCell>
-                                        {filterCols?.map(col => <TCComponent data={{ row, col }} />)}
-                                    </StyledTableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+            {
+                isLoading ? (
+                    <div style={{ margin: "auto", }} >
+                        <CircularProgress />
                     </div>
+                ) : (
+                    <div className="" ref={pdfView}>
+                        <div className="table_scroll_container">
+                            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                                <TableHead>
+                                    <TableRow>
+                                        <StyledTableCell>S. No.</StyledTableCell>
+                                        {filterCols?.map(col => <StyledTableCell>{col.label}</StyledTableCell>)}
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {allData?.map((row, i) => (
+                                        <StyledTableRow key={i} >
+                                            <StyledTableCell>{((pageCount * filterData.limit) - filterData.limit) + (i + 1)}</StyledTableCell>
+                                            {filterCols?.map(col => <TCComponent data={{ row, col }} />)}
+                                        </StyledTableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
 
-                    {allData?.length !== 0 || allData && (
-                        <div className="top_filter_section" style={{ marginBlock: "1rem" }} >
-                            <div className="limit_bottom_info">Showing {((pageCount * filterData.limit) - filterData.limit) + 1} to {totalDataCount > pageCount * filterData.limit ? pageCount * filterData.limit : totalDataCount} of {totalDataCount} entries</div>
-                            <div>
-                                <Pagination
-                                    count={pageLength}
-                                    size="medium"
-                                    color="primary"
-                                    shape="rounded"
-                                    variant="outlined"
-                                    onChange={(e, value) => setpageCount(value)}
-                                    page={pageCount}
-                                />
+                        {allData?.length === 0 || allData && (
+                            <div className="top_filter_section" style={{ marginBlock: "1rem" }} >
+                                <div className="limit_bottom_info">Showing {((pageCount * filterData.limit) - filterData.limit) + 1} to {totalDataCount > pageCount * filterData.limit ? pageCount * filterData.limit : totalDataCount} of {totalDataCount} entries</div>
+                                <div>
+                                    <Pagination
+                                        count={pageLength}
+                                        size="medium"
+                                        color="primary"
+                                        shape="rounded"
+                                        variant="outlined"
+                                        onChange={(e, value) => setpageCount(value)}
+                                        page={pageCount}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {allData?.length === 0 || !allData && (
-                        <div className="no_data">
-                            No data
-                        </div>
-                    )}
-                </div>
-            )}
+                        {allData?.length === 0 || !allData && (
+                            <div className="no_data">
+                                No data
+                            </div>
+                        )}
+                    </div>
+                )
+            }
         </>
     )
 }
 
-export default CompanyListing
+export default PlanListing

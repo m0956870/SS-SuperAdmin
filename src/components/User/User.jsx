@@ -22,6 +22,8 @@ import { saveToPdf } from "../../utils/saveToPdf";
 import xlsx from "json-as-xlsx";
 import { AdminContext } from "../../App";
 import { fetchAllUsers, updateUser } from "../../api/userAPI";
+import { FaEye } from "react-icons/fa";
+import { BsFillEyeSlashFill } from "react-icons/bs";
 
 const User = () => {
     // const {state} = useContext(AdminContext)
@@ -43,6 +45,7 @@ const User = () => {
     const [userPermissions, setuserPermissions] = useState([]);
     const [currentRow, setcurrentRow] = useState({})
     const [firstRender, setFirstRender] = useState(true)
+    const [showPassword, setShowPassword] = useState(false);
 
     const [modulePermissionState, setmodulePermissionState] = useState(['SFA', 'DMS', 'Lead Management', 'Demo Control']);
     const [permissionState, setpermissionState] = useState(['Edit Company', 'Delete Company', 'View Listing', 'View Password', 'Create Plan', 'View Plan', 'Create Company', 'Create User']);
@@ -78,7 +81,6 @@ const User = () => {
             }
         }
     }, [showPermission])
-    // console.log("userPermissions", userPermissions)
 
     const fetchAllUsersFunc = async (filterData) => {
         setisLoading(true);
@@ -175,6 +177,15 @@ const User = () => {
         setTableCols(temp)
     }
 
+    const passwordToggleFunc = (row) => {
+        allData.map(user => {
+            if (user._id === row._id) {
+                user.showPass = !user.showPass
+            }
+        })
+        setallData([...allData])
+    }
+
     const TCComponent = ({ data }) => {
         let { row, col } = data;
         if (col.type === "action") {
@@ -195,8 +206,24 @@ const User = () => {
                 </StyledTableCell>
             )
         } else if (col.type === "password_value") {
-            // return <StyledTableCell>{row[col.key]}</StyledTableCell>
-            return <StyledTableCell>******</StyledTableCell>
+            return (
+                <StyledTableCell style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} >
+                    <span>{row.showPass ? row[col.key] : row[col.key].split("").map(x => x = "*").join("")}</span>
+                    <span>
+                        {row.showPass ? (
+                            <BsFillEyeSlashFill
+                                style={{ margin: "0 0.3rem", fontSize: "1rem", cursor: "pointer", }}
+                                onClick={() => passwordToggleFunc(row)}
+                            />
+                        ) : (
+                            <FaEye
+                                style={{ margin: "0 0.3rem", fontSize: "1rem", cursor: "pointer", }}
+                                onClick={() => passwordToggleFunc(row)}
+                            />
+                        )}
+                    </span>
+                </StyledTableCell>
+            )
         } else if (col.type === "permission_value") {
             return (
                 <StyledTableCell>
@@ -375,7 +402,7 @@ const User = () => {
                         </Table>
                     </div>
 
-                    {allData?.length !== 0 && (
+                    {allData?.length !== 0 || allData && (
                         <div className="top_filter_section" style={{ marginBlock: "1rem" }} >
                             <div className="limit_bottom_info">Showing {((pageCount * filterData.limit) - filterData.limit) + 1} to {totalDataCount > pageCount * filterData.limit ? pageCount * filterData.limit : totalDataCount} of {totalDataCount} entries</div>
                             <div>
@@ -392,7 +419,7 @@ const User = () => {
                         </div>
                     )}
 
-                    {allData?.length === 0 && (
+                    {allData?.length === 0 || !allData && (
                         <div className="no_data">
                             No data
                         </div>

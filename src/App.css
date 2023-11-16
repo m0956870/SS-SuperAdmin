@@ -17,6 +17,14 @@
   flex-direction: column;
 }
 
+.no_data {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 2rem auto;
+  text-align: center;
+  width: 100%;
+}
+
 /* error page */
 .error_page {
   display: flex;
@@ -372,4 +380,57 @@
   border: 1px solid grey;
   padding: 0.5rem;
   border-radius: 0.3rem;
+}
+
+/* plan */
+.addbeat_container {
+  align-items: center;
+  background-color: #fff;
+  border-radius: .5rem;
+  box-shadow: var(--box-shadow);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto 2rem;
+  padding: .5rem 2rem;
+  width: 100%;
+}
+
+.addbeat_form {
+  align-items: flex-start;
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.addbeat_form .addbeat_left, .addbeat_form .addbeat_right {
+  align-items: flex-start;
+  width: 50%;
+}
+
+.addbeat_form input, .addbeat_form select {
+  background: #f2f7fb;
+  border: none;
+  border-radius: .5rem;
+  box-sizing: border-box;
+  font-size: .9rem;
+  margin: .6rem 0;
+  outline: none;
+  padding: .8rem .6rem;
+  width: 100%;
+}
+
+.addbeat_left select, .addbeat_right select {
+  background: #f2f7fb;
+  border: none;
+  border-radius: .5rem;
+  box-sizing: border-box;
+  color: gray;
+  font-size: .9rem;
+  margin: .6rem 0;
+  outline: none;
+  padding: .8rem .6rem;
+  width: 100%;
 }
