@@ -19,14 +19,41 @@ export const fetchPlan = async (data) => {
 
 export const addPlan = async (data) => {
     let config = {
-      method: "post",
-      url: getBaseUrl() + "root/plan",
-      data,
+        method: "post",
+        url: getBaseUrl() + "root/plan",
+        data,
     };
     try {
-      return await axios(config);
+        return await axios(config);
     } catch (error) {
-      console.log(error);
-      return error.response;
+        console.log(error);
+        return error.response;
     }
-  };
+};
+
+export const editPlan = async (data) => {
+    let config = {
+        method: "patch",
+        url: getBaseUrl() + "root/plan",
+        data,
+    };
+    try {
+        return await axios(config);
+    } catch (error) {
+        console.log(error);
+        return error.response;
+    }
+};
+
+export const deletePlan = async (id) => {
+    let config = {
+        method: "delete",
+        url: getBaseUrl() + `root/plan/${id}`,
+    };
+    try {
+        return await axios(config);
+    } catch (error) {
+        console.log(error);
+        return error.response;
+    }
+};

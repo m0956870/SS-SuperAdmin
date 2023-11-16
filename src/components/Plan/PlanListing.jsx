@@ -14,13 +14,14 @@ import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import { tableCellClasses } from "@mui/material/TableCell";
+import { Dialog, DialogActions, DialogTitle, DialogContent } from "@mui/material";
 
 import { useRef } from "react";
 import { BsFilterLeft } from "react-icons/bs"
 import { saveToPdf } from "../../utils/saveToPdf";
 import xlsx from "json-as-xlsx";
 import { AdminContext } from "../../App";
-import { fetchPlan } from "../../api/planAPI";
+import { deletePlan, fetchPlan } from "../../api/planAPI";
 
 const PlanListing = () => {
     // const {state} = useContext(AdminContext)
@@ -67,8 +68,6 @@ const PlanListing = () => {
     //     }
     // }, [search]);
 
-    console.log("allData", allData, !allData)
-
     const fetchAllPlanFunc = async (filterData) => {
         setisLoading(true);
 
@@ -81,6 +80,17 @@ const PlanListing = () => {
             console.log(data.messaage)
         }
         setisLoading(false);
+    }
+
+    const deletePlanFunc = async () => {
+        let { data } = await deletePlan(currentGroup._id);
+        if (data.status) {
+            fetchAllPlanFunc(filterData)
+            toast.success(data.messaage)
+        } else {
+            console.log(data.messaage)
+        }
+        setdeletePopup(false);
     }
 
     const filterAndExportFunc = (type) => {
@@ -107,7 +117,7 @@ const PlanListing = () => {
         {
             label: 'Plan Name',
             key: 'plan_name',
-            type: "value",
+            type: "plan_value",
             active: true,
         },
         {
@@ -117,7 +127,7 @@ const PlanListing = () => {
             active: true,
         },
         {
-            label: 'Modul Covered',
+            label: 'features',
             key: 'features',
             type: "value",
             active: true,
@@ -168,9 +178,10 @@ const PlanListing = () => {
         if (col.type === "action") {
             return (
                 <StyledTableCell style={{ whiteSpace: "nowrap" }} >
-                    {/* <BorderColorIcon
-                        onClick={() => navigate("/edit_plan", { state: row })}
+                    <BorderColorIcon
                         style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
+                        className="emp_grp_icons"
+                        onClick={() => navigate("/edit_plan", { state: row })}
                     />
                     <DeleteIcon
                         style={{ fontSize: "1rem", color: "red", marginLeft: "0.5rem", }}
@@ -179,9 +190,11 @@ const PlanListing = () => {
                             setdeletePopup(true);
                             setcurrentGroup(row);
                         }}
-                    /> */}
+                    />
                 </StyledTableCell>
             )
+        } else if (col.type === "plan_value") {
+            return <StyledTableCell>{String(row[col.key]).toUpperCase()}</StyledTableCell>;
         }
         return <StyledTableCell>{row[col.key]}</StyledTableCell>;
     }
@@ -376,6 +389,35 @@ const PlanListing = () => {
                     </div>
                 )
             }
+
+            <Dialog
+                open={deletePopup}
+                aria-labelledby="form-dialog-title"
+                maxWidth="xs"
+                fullWidth="true"
+                onClose={() => setdeletePopup(false)}
+            >
+                <DialogTitle className="dialog_title">
+                    <div>Do you want to delete {currentGroup.plan_name}-{currentGroup.features}?</div>
+                </DialogTitle>
+                <DialogContent className="cardpopup_content_delete">
+                    <div style={{ display: "flex", gap: "1rem" }}>
+                        <div
+                            className="employee_gl_popup"
+                            onClick={() => setdeletePopup(false)}
+                        >
+                            Cancel
+                        </div>
+                        <div
+                            className="employee_gl_popup_del"
+                            onClick={() => deletePlanFunc()}
+                        >
+                            Delete
+                        </div>
+                    </div>
+                </DialogContent>
+                <DialogActions></DialogActions>
+            </Dialog>
         </>
     )
 }

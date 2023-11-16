@@ -1,22 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import group from "../../images/group.png";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import { toast } from "react-toastify";
 import { blankValidator } from "../../utils/Validation";
-import { addPlan } from "../../api/planAPI";
+import { addPlan, editPlan } from "../../api/planAPI";
 
-const AddPlan = () => {
+const EditPlan = () => {
+    const location = useLocation();
+    // console.log("location", location.state)
     const navigate = useNavigate();
     const [btnLoading, setbtnLoading] = useState(false);
 
     const [plan, setplan] = useState({
-        plan_name: "sfa",
+        plan_name: "",
         cost_per_user_per_month: "",
-        billing_frequency: "monthly",
+        billing_frequency: "",
         discount: "",
         minimum_user: "",
-        features: "basic",
+        features: "",
     });
 
     const [error, seterror] = useState({
@@ -27,11 +29,22 @@ const AddPlan = () => {
         // features: "",
     });
 
+    useEffect(() => {
+        setplan({
+            plan_name: location.state.plan_name,
+            cost_per_user_per_month: location.state.cost_per_user_per_month,
+            billing_frequency: location.state.billing_frequency,
+            discount: location.state.discount,
+            minimum_user: location.state.minimum_user,
+            features: location.state.features,
+        })
+    }, [])
+
     const handleInput = (e) => {
         setplan({ ...plan, [e.target.name]: e.target.value });
     };
 
-    const addPlanFunc = async () => {
+    const editPlanFunc = async () => {
         let err = false;
         // if (plan.plan_name === "") { seterror((prev) => ({ ...prev, plan_name: "Plan name is required!" })); err = true; }
         // else { seterror((prev) => ({ ...prev, plan_name: "" })); }
@@ -46,7 +59,7 @@ const AddPlan = () => {
         if (err) return;
 
         setbtnLoading(true)
-        let { data } = await addPlan(plan)
+        let { data } = await editPlan({ ...plan, id: location.state._id })
         if (data.status) {
             navigate("/plan")
             toast.success(data.message)
@@ -70,7 +83,7 @@ const AddPlan = () => {
             <div className="addbeat_container">
                 <div className="addbeat_form">
                     <div className="addbeat_left">
-                        <select name="plan_name" onChange={handleInput} >
+                        <select name="plan_name" value={plan.plan_name} onChange={handleInput} >
                             <option value="sfa">SFA</option>
                             <option value="dms">DMS</option>
                             <option value="lead management">Lead Management</option>
@@ -78,7 +91,7 @@ const AddPlan = () => {
                         {/* {error.plan_name.length !== 0 && (
                             <div className="input_error" >{error.plan_name}</div>
                         )} */}
-                        <select name="billing_frequency" onChange={handleInput} >
+                        <select name="billing_frequency" value={plan.billing_frequency} onChange={handleInput} >
                             <option value="monthly">Monthly</option>
                             <option value="annually">Annually</option>
                         </select>
@@ -125,7 +138,7 @@ const AddPlan = () => {
                         {error.discount.length !== 0 && (
                             <div className="input_error" >{error.discount}</div>
                         )}
-                        <select name="features" onChange={handleInput}>
+                        <select name="features" value={plan.features} onChange={handleInput}>
                             <option value="basic">Basic</option>
                             {plan.plan_name === "sfa" && (
                                 <>
@@ -139,11 +152,11 @@ const AddPlan = () => {
                         )} */}
                     </div>
                 </div>
-                <div onClick={() => !btnLoading && addPlanFunc()} className="btn changepass_btn">
+                <div onClick={() => !btnLoading && editPlanFunc()} className="btn changepass_btn">
                     {btnLoading ? (
                         <CircularProgress style={{ color: "#fff" }} size={26} />
                     ) : (
-                        "ADD PLAN"
+                        "SAVE"
                     )}
                 </div>
             </div>
@@ -151,4 +164,4 @@ const AddPlan = () => {
     );
 };
 
-export default AddPlan;
+export default EditPlan;

@@ -27,7 +27,7 @@ const Sidebar = ({ open }) => {
       navigate: "company_listing",
       show: false,
       subItems: [
-        { name: "Company Lisitng", link: "/company_lisitng" },
+        { name: "Company Lisitng", link: "/company_listing" },
       ],
     },
     {
