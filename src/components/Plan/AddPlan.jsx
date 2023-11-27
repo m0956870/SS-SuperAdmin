@@ -73,7 +73,7 @@ const AddPlan = () => {
                         <select name="plan_name" onChange={handleInput} >
                             <option value="sfa">SFA</option>
                             <option value="dms">DMS</option>
-                            <option value="lead management">Lead Management</option>
+                            <option value="lead_management">Lead Management</option>
                         </select>
                         {/* {error.plan_name.length !== 0 && (
                             <div className="input_error" >{error.plan_name}</div>

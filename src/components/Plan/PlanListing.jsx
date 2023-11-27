@@ -194,7 +194,7 @@ const PlanListing = () => {
                 </StyledTableCell>
             )
         } else if (col.type === "plan_value") {
-            return <StyledTableCell>{String(row[col.key]).toUpperCase()}</StyledTableCell>;
+            return <StyledTableCell>{String(row[col.key]).toUpperCase().split("_").join(" ")}</StyledTableCell>;
         }
         return <StyledTableCell>{row[col.key]}</StyledTableCell>;
     }

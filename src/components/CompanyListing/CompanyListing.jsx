@@ -1,5 +1,5 @@
 import "../../App.css"
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import group from "../../images/group.png";
 import SearchIcon from "@mui/icons-material/Search";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
@@ -20,6 +20,7 @@ import { BsFilterLeft } from "react-icons/bs"
 import { saveToPdf } from "../../utils/saveToPdf";
 import xlsx from "json-as-xlsx";
 import { AdminContext } from "../../App";
+import { getCompany } from "../../api/companyAPI";
 
 const CompanyListing = () => {
     // const {state} = useContext(AdminContext)
@@ -45,9 +46,10 @@ const CompanyListing = () => {
         limit: "10",
     })
 
-    // useEffect(() => {
-    //     getStateFunc().then((res) => setallState(res.data.result));
-    // }, []);
+    useEffect(() => {
+        // getStateFunc().then((res) => setallState(res.data.result));
+        getCompany("sfa")
+    }, []);
     // useEffect(() => {
     //     fetchAllBeatFunc({ ...filterData, page: pageCount });
     // }, [pageCount]);
@@ -61,6 +63,25 @@ const CompanyListing = () => {
     //         return () => clearTimeout(ID);
     //     }
     // }, [search]);
+    console.log("allData", allData)
+
+    const getCompanyFunc = async (type) => {
+        setactiveTab(type);
+
+        if (type === "SFA ( Sales for Automation )") type = "sfa";
+        if (type === "DMS ( Distributor Management System )") type = "dms";
+        if (type === "Lead Managment") type = "lead_management";
+
+        let { data } = await getCompany(type);
+        if (data.status) {
+            setallData(data.data);
+            setpageLength(data.total_pages);
+            settotalDataCount(data.total_users);
+        } else {
+            console.log(data.message);
+        }
+        setisLoading(false);
+    }
 
     const filterAndExportFunc = (type) => {
         setTimeout(() => {
@@ -84,35 +105,83 @@ const CompanyListing = () => {
     // Filter
     const [tableCols, setTableCols] = useState([
         {
-            label: 'Beat Name',
-            key: 'beatName',
+            label: 'CompanyName',
+            key: 'company_name',
             type: "value",
             active: true,
         },
         {
-            label: 'State',
+            label: 'Company Id',
             key: 'name',
-            type: "state_value",
+            type: "company_code_value",
             active: true,
         },
         {
-            label: 'Employee',
+            label: 'State',
             key: 'employee_name',
             type: "value",
             active: true,
         },
         {
-            label: 'Day',
+            label: 'City',
             key: "day",
             type: "value",
             active: true,
         },
         {
-            label: 'Status',
-            key: "status",
-            type: "status",
+            label: 'Email',
+            key: "day",
+            type: "value",
             active: true,
         },
+        {
+            label: 'Total Users',
+            key: 'beatName',
+            type: "value",
+            active: true,
+        },
+        {
+            label: 'Registered User',
+            key: 'beatName',
+            type: "value",
+            active: true,
+        },
+        {
+            label: 'Plan Purchased',
+            key: 'beatName',
+            type: "value",
+            active: true,
+        },
+        {
+            label: 'Plan Amount',
+            key: 'beatName',
+            type: "value",
+            active: true,
+        },
+        {
+            label: 'Period',
+            key: 'beatName',
+            type: "value",
+            active: true,
+        },
+        {
+            label: 'Renewal Date',
+            key: 'beatName',
+            type: "value",
+            active: true,
+        },
+        {
+            label: 'Active User',
+            key: 'beatName',
+            type: "value",
+            active: true,
+        },
+        // {
+        //     label: 'Status',
+        //     key: "status",
+        //     type: "status",
+        //     active: true,
+        // },
         {
             label: 'Action',
             key: "abscent",
@@ -149,6 +218,8 @@ const CompanyListing = () => {
               /> */}
                 </StyledTableCell>
             )
+        } else if (col.type === "company_code_value") {
+            return <StyledTableCell>{row.companyShortCode + row.companyShortCode2}</StyledTableCell>;
         }
         return <StyledTableCell>{row[col.key]}</StyledTableCell>;
     }
@@ -206,19 +277,19 @@ const CompanyListing = () => {
             </div>
 
             <div className="config_tab">
-                <div onClick={() => setactiveTab("SFA ( Sales for Automation )")} className={`confi_div ${activeTab === "SFA ( Sales for Automation )" ? "config_active_tab" : ""}`}
+                <div onClick={() => getCompanyFunc("SFA ( Sales for Automation )")} className={`confi_div ${activeTab === "SFA ( Sales for Automation )" ? "config_active_tab" : ""}`}
                 >
                     SFA
                 </div>
-                <div onClick={() => setactiveTab("DMS ( Distributor Management System )")} className={`confi_div ${activeTab === "DMS ( Distributor Management System )" ? "config_active_tab" : ""}`}
+                <div onClick={() => getCompanyFunc("DMS ( Distributor Management System )")} className={`confi_div ${activeTab === "DMS ( Distributor Management System )" ? "config_active_tab" : ""}`}
                 >
                     DMS
                 </div>
-                <div onClick={() => setactiveTab("Lead Managment")} className={`confi_div ${activeTab === "Lead Managment" ? "config_active_tab" : ""}`}
+                <div onClick={() => getCompanyFunc("Lead Managment")} className={`confi_div ${activeTab === "Lead Managment" ? "config_active_tab" : ""}`}
                 >
                     Lead Managment
                 </div>
-                <div onClick={() => setactiveTab("Demo Control")} className={`confi_div ${activeTab === "Demo Control" ? "config_active_tab" : ""}`}
+                <div onClick={() => getCompanyFunc("Demo Control")} className={`confi_div ${activeTab === "Demo Control" ? "config_active_tab" : ""}`}
                 >
                     Demo Control
                 </div>
