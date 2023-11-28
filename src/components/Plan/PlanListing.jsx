@@ -251,7 +251,7 @@ const PlanListing = () => {
                 </div>
             </div>
 
-            <div className="config_tab">
+            {/* <div className="config_tab">
                 <div onClick={() => setactiveTab("SFA ( Sales for Automation )")} className={`confi_div ${activeTab === "SFA ( Sales for Automation )" ? "config_active_tab" : ""}`}
                 >
                     SFA
@@ -268,7 +268,7 @@ const PlanListing = () => {
                 >
                     Demo Control
                 </div>
-            </div>
+            </div> */}
 
             <div class="tracking_tabs">
                 <div className="tarcking_tab_left">
@@ -283,7 +283,7 @@ const PlanListing = () => {
                             <option key={state.id} value={state.id}>{state.name}</option>
                         ))}
                     </select> */}
-                    <select name="" id="">
+                    {/* <select name="" id="">
                         <option value="">State</option>
                         <option value="">1</option>
                         <option value="">2</option>
@@ -293,9 +293,10 @@ const PlanListing = () => {
                         <option value="">1</option>
                         <option value="">2</option>
                     </select>
-                    <div className="view_btn" /* onClick={() => fetchAllBeatFunc(filterData)}*/ >
+                    <div className="view_btn" onClick={() => fetchAllBeatFunc(filterData)} >
                         View
                     </div>
+                     */}
                 </div>
                 <div className="top_filter_section">
                     <div className="top_left_filter">

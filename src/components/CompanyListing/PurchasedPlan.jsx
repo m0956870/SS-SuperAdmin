@@ -4,7 +4,7 @@ import group from "../../images/group.png";
 import SearchIcon from "@mui/icons-material/Search";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CircularProgress, Pagination } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -25,9 +25,11 @@ import xlsx from "json-as-xlsx";
 import { AdminContext } from "../../App";
 import { getCompany } from "../../api/companyAPI";
 
-const CompanyListing = () => {
+const PurchasedPlan = () => {
     // const {state} = useContext(AdminContext)
     // console.log(state)
+    const { state } = useLocation();
+    console.log("location", state)
     const navigate = useNavigate();
     const [isLoading, setisLoading] = useState(false);
     const pdfView = useRef(null);
@@ -36,7 +38,7 @@ const CompanyListing = () => {
     const [pdfBtnLoading, setpdfBtnLoading] = useState(false)
 
     const [search, setSearch] = useState("");
-    const [activeTab, setactiveTab] = useState("SFA ( Sales for Automation )")
+    const [activeTab, setactiveTab] = useState(state.planType)
     const [planType, setPlanType] = useState("sfa")
 
     const [allData, setallData] = useState([])
@@ -55,7 +57,7 @@ const CompanyListing = () => {
 
     useEffect(() => {
         // getStateFunc().then((res) => setallState(res.data.result));
-        getCompanyFunc("SFA ( Sales for Automation )")
+        getPurchasedPlanFunc(state.planType)
     }, []);
     // useEffect(() => {
     //     fetchAllBeatFunc({ ...filterData, page: pageCount });
@@ -72,7 +74,7 @@ const CompanyListing = () => {
     // }, [search]);
     console.log("allData", allData)
 
-    const getCompanyFunc = async (type) => {
+    const getPurchasedPlanFunc = async (type) => {
         setactiveTab(type);
 
         if (type === "SFA ( Sales for Automation )") {
@@ -241,7 +243,7 @@ const CompanyListing = () => {
                     <RxCounterClockwiseClock
                         className="emp_grp_icons"
                         style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
-                        onClick={() => navigate("/purchased_plan", { state: { company: row, planType } })}
+                        onClick={() => navigate("/purchased_plan", { state: row })}
                     />
                 </StyledTableCell>
             )
@@ -294,7 +296,7 @@ const CompanyListing = () => {
                     <div className="icon">
                         <img src={group} alt="icon" />
                     </div>
-                    <div className="title">{activeTab}</div>
+                    <div className="title">{state.company?.company_name}</div>
                 </div>
                 <div className="beat_right">
                     <div className="search">
@@ -310,19 +312,19 @@ const CompanyListing = () => {
             </div>
 
             <div className="config_tab">
-                <div onClick={() => getCompanyFunc("SFA ( Sales for Automation )")} className={`confi_div ${activeTab === "SFA ( Sales for Automation )" ? "config_active_tab" : ""}`}
+                <div onClick={() => getPurchasedPlanFunc("SFA ( Sales for Automation )")} className={`confi_div ${activeTab === "SFA ( Sales for Automation )" ? "config_active_tab" : ""}`}
                 >
                     SFA
                 </div>
-                <div onClick={() => getCompanyFunc("DMS ( Distributor Management System )")} className={`confi_div ${activeTab === "DMS ( Distributor Management System )" ? "config_active_tab" : ""}`}
+                <div onClick={() => getPurchasedPlanFunc("DMS ( Distributor Management System )")} className={`confi_div ${activeTab === "DMS ( Distributor Management System )" ? "config_active_tab" : ""}`}
                 >
                     DMS
                 </div>
-                <div onClick={() => getCompanyFunc("Lead Managment")} className={`confi_div ${activeTab === "Lead Managment" ? "config_active_tab" : ""}`}
+                <div onClick={() => getPurchasedPlanFunc("Lead Managment")} className={`confi_div ${activeTab === "Lead Managment" ? "config_active_tab" : ""}`}
                 >
                     Lead Managment
                 </div>
-                <div onClick={() => getCompanyFunc("Demo Control")} className={`confi_div ${activeTab === "Demo Control" ? "config_active_tab" : ""}`}
+                <div onClick={() => getPurchasedPlanFunc("Demo Control")} className={`confi_div ${activeTab === "Demo Control" ? "config_active_tab" : ""}`}
                 >
                     Demo Control
                 </div>
@@ -450,4 +452,4 @@ const CompanyListing = () => {
     )
 }
 
-export default CompanyListing
+export default PurchasedPlan
