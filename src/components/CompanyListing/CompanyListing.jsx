@@ -81,10 +81,12 @@ const CompanyListing = () => {
         } else if (type === "DMS ( Distributor Management System )") {
             type = "dms";
             setPlanType("dms");
-        }
-        if (type === "Lead Managment") {
+        } else if (type === "Lead Managment") {
             type = "lead_management";
             setPlanType("lead_management");
+        } else if (type === "Demo Control") {
+            type = "demo_control";
+            setPlanType("Demo Control");
         }
 
         setisLoading(true);

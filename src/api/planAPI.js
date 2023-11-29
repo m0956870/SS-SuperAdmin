@@ -64,7 +64,7 @@ export const getPruchasedPlan = async (data) => {
     const token = localStorage.getItem("ss_token");
     let config = {
         method: "post",
-        url: getBaseUrl() + "root/plan/purchased_plan",
+        url: getBaseUrl() + "root/company/purchased_plan",
         headers: { authorization: `Bearer ${token}` },
         data,
     };

@@ -24,12 +24,13 @@ import { saveToPdf } from "../../utils/saveToPdf";
 import xlsx from "json-as-xlsx";
 import { AdminContext } from "../../App";
 import { getCompany } from "../../api/companyAPI";
+import { getPruchasedPlan } from "../../api/planAPI";
 
 const PurchasedPlan = () => {
-    // const {state} = useContext(AdminContext)
+    // const { state } = useContext(AdminContext)
     // console.log(state)
-    const { state } = useLocation();
-    console.log("location", state)
+    const { state: location } = useLocation();
+    console.log("location", location)
     const navigate = useNavigate();
     const [isLoading, setisLoading] = useState(false);
     const pdfView = useRef(null);
@@ -38,8 +39,7 @@ const PurchasedPlan = () => {
     const [pdfBtnLoading, setpdfBtnLoading] = useState(false)
 
     const [search, setSearch] = useState("");
-    const [activeTab, setactiveTab] = useState(state.planType)
-    const [planType, setPlanType] = useState("sfa")
+    const [planType, setPlanType] = useState(location?.planType)
 
     const [allData, setallData] = useState([])
     const [pageCount, setpageCount] = useState(1);
@@ -50,6 +50,8 @@ const PurchasedPlan = () => {
     const [currentGroup, setcurrentGroup] = useState({});
 
     const [filterData, setfilterData] = useState({
+        id: location?.company?._id,
+        type: location?.planType,
         state: "",
         page: pageCount,
         limit: "10",
@@ -57,8 +59,10 @@ const PurchasedPlan = () => {
 
     useEffect(() => {
         // getStateFunc().then((res) => setallState(res.data.result));
-        getPurchasedPlanFunc(state.planType)
-    }, []);
+        getPurchasedPlanFunc({ ...filterData, type: planType })
+    }, [planType]);
+
+
     // useEffect(() => {
     //     fetchAllBeatFunc({ ...filterData, page: pageCount });
     // }, [pageCount]);
@@ -74,23 +78,12 @@ const PurchasedPlan = () => {
     // }, [search]);
     console.log("allData", allData)
 
-    const getPurchasedPlanFunc = async (type) => {
-        setactiveTab(type);
-
-        if (type === "SFA ( Sales for Automation )") {
-            type = "sfa";
-            setPlanType("sfa");
-        } else if (type === "DMS ( Distributor Management System )") {
-            type = "dms";
-            setPlanType("dms");
-        }
-        if (type === "Lead Managment") {
-            type = "lead_management";
-            setPlanType("lead_management");
-        }
+    const getPurchasedPlanFunc = async (filterData) => {
+        // setactiveTab(filterData.type);
+        // setPlanType(filterData.type);
 
         setisLoading(true);
-        let { data } = await getCompany(type);
+        let { data } = await getPruchasedPlan(filterData);
         if (data.status) {
             setallData(data.data);
             setpageLength(data.total_pages);
@@ -123,87 +116,51 @@ const PurchasedPlan = () => {
     // Filter
     const [tableCols, setTableCols] = useState([
         {
-            label: 'CompanyName',
-            key: 'company_name',
+            label: 'Date of Subscription',
+            key: 'startDate',
             type: "value",
             active: true,
         },
         {
-            label: 'Company Id',
-            key: 'name',
-            type: "company_code_value",
-            active: true,
-        },
-        {
-            label: 'State',
-            key: 'state',
-            type: "state_value",
-            active: true,
-        },
-        {
-            label: 'City',
-            key: "city",
-            type: "state_value",
-            active: true,
-        },
-        {
-            label: 'Email',
-            key: "email",
-            type: "value",
-            active: true,
-        },
-        {
-            label: 'Total Users',
-            key: 'totalUsers',
-            type: "value",
-            active: true,
-        },
-        {
-            label: 'Registered User',
-            key: 'registeredUsers',
-            type: "value",
-            active: true,
-        },
-        {
-            label: 'Plan Purchased',
+            label: 'Modul Covered',
             key: 'features',
-            type: "sfa_plan_vlaue",
+            type: "plan_value",
+            active: true,
+        },
+        {
+            label: 'Plan Name',
+            key: 'plan_name',
+            type: "plan_value",
             active: true,
         },
         {
             label: 'Plan Amount',
-            key: 'totalPayment',
-            type: "sfa_vlaue",
-            active: true,
-        },
-        {
-            label: 'Period',
-            key: 'durationCount',
-            type: "sfa_vlaue",
-            active: true,
-        },
-        {
-            label: 'Renewal Date',
-            key: 'startDate',
-            type: "sfa_vlaue",
-            active: true,
-        },
-        {
-            label: 'Active User',
-            key: 'beatName',
+            key: "totalPayment",
             type: "value",
             active: true,
         },
-        // {
-        //     label: 'Status',
-        //     key: "status",
-        //     type: "status",
-        //     active: true,
-        // },
         {
-            label: 'Action',
-            key: "abscent",
-            type: "action",
+            label: 'Subscription Start Date',
+            key: "startDate",
+            type: "value",
+            active: true,
+        },
+        {
+            label: 'Subscription End Date',
+            key: 'endDate',
+            type: "value",
+            active: true,
+        },
+        {
+            label: 'Number of Users',
+            key: 'userCount',
+            type: "value",
+            active: true,
+        },
+        {
+            label: 'Billing Frequency',
+            key: 'billing_frequency',
+            type: "plan_value",
             active: true,
         },
     ]);
@@ -219,42 +176,9 @@ const PurchasedPlan = () => {
 
     const TCComponent = ({ data }) => {
         let { row, col } = data;
-        if (col.type === "action") {
-            return (
-                <StyledTableCell style={{ whiteSpace: "nowrap" }} >
-                    <BorderColorIcon
-                        className="emp_grp_icons"
-                        style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
-                        onClick={() => navigate("#", { state: row })}
-                    />
-                    <DeleteIcon
-                        style={{ fontSize: "1rem", color: "red", marginLeft: "0.5rem", }}
-                        className=" emp_grp_icons"
-                        onClick={() => {
-                            setdeletePopup(true);
-                            setcurrentGroup(row);
-                        }}
-                    />
-                    <MdOutlineSettings
-                        className="emp_grp_icons"
-                        style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
-                    // onClick={() => navigate("/edit_beat", { state: row })}
-                    />
-                    <RxCounterClockwiseClock
-                        className="emp_grp_icons"
-                        style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
-                        onClick={() => navigate("/purchased_plan", { state: row })}
-                    />
-                </StyledTableCell>
-            )
-        } else if (col.type === "company_code_value") {
-            return <StyledTableCell>{row.companyShortCode + row.companyShortCode2}</StyledTableCell>;
-        } else if (col.type === "state_value") {
-            return <StyledTableCell>{row[col.key]?.name}</StyledTableCell>;
-        } else if (col.type === "sfa_vlaue") {
-            return <StyledTableCell>{row[planType]?.[col.key]}</StyledTableCell>;
-        } else if (col.type === "sfa_plan_vlaue") {
-            return <StyledTableCell>{row[planType].plan?.[col.key]}</StyledTableCell>;
+        if (col.type === "plan_value") {
+            if (row?.plan?.[col.key] === "lead_management") return <StyledTableCell>{row?.plan?.[col.key].split("_").join(" ")}</StyledTableCell>;
+            return <StyledTableCell>{row?.plan?.[col.key]}</StyledTableCell>;
         }
         return <StyledTableCell>{row[col.key]}</StyledTableCell>;
     }
@@ -296,7 +220,7 @@ const PurchasedPlan = () => {
                     <div className="icon">
                         <img src={group} alt="icon" />
                     </div>
-                    <div className="title">{state.company?.company_name}</div>
+                    <div className="title">{location.company?.company_name}</div>
                 </div>
                 <div className="beat_right">
                     <div className="search">
@@ -312,19 +236,19 @@ const PurchasedPlan = () => {
             </div>
 
             <div className="config_tab">
-                <div onClick={() => getPurchasedPlanFunc("SFA ( Sales for Automation )")} className={`confi_div ${activeTab === "SFA ( Sales for Automation )" ? "config_active_tab" : ""}`}
+                <div onClick={() => setPlanType("sfa")} className={`confi_div ${planType === "sfa" ? "config_active_tab" : ""}`}
                 >
                     SFA
                 </div>
-                <div onClick={() => getPurchasedPlanFunc("DMS ( Distributor Management System )")} className={`confi_div ${activeTab === "DMS ( Distributor Management System )" ? "config_active_tab" : ""}`}
+                <div onClick={() => setPlanType("dms")} className={`confi_div ${planType === "dms" ? "config_active_tab" : ""}`}
                 >
                     DMS
                 </div>
-                <div onClick={() => getPurchasedPlanFunc("Lead Managment")} className={`confi_div ${activeTab === "Lead Managment" ? "config_active_tab" : ""}`}
+                <div onClick={() => setPlanType("lead_management")} className={`confi_div ${planType === "lead_management" ? "config_active_tab" : ""}`}
                 >
                     Lead Managment
                 </div>
-                <div onClick={() => getPurchasedPlanFunc("Demo Control")} className={`confi_div ${activeTab === "Demo Control" ? "config_active_tab" : ""}`}
+                <div onClick={() => setPlanType("demo_control")} className={`confi_div ${planType === "demo_control" ? "config_active_tab" : ""}`}
                 >
                     Demo Control
                 </div>
