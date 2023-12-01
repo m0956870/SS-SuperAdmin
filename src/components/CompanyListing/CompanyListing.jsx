@@ -184,7 +184,7 @@ const CompanyListing = () => {
         },
         {
             label: 'Renewal Date',
-            key: 'startDate',
+            key: 'endDate',
             type: "sfa_vlaue",
             active: true,
         },
@@ -240,11 +240,13 @@ const CompanyListing = () => {
                         style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
                     // onClick={() => navigate("/edit_beat", { state: row })}
                     />
+                    {planType !== "Demo Control" && (
                     <RxCounterClockwiseClock
                         className="emp_grp_icons"
                         style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
                         onClick={() => navigate("/purchased_plan", { state: { company: row, planType } })}
                     />
+                    )}
                 </StyledTableCell>
             )
         } else if (col.type === "company_code_value") {
@@ -254,7 +256,7 @@ const CompanyListing = () => {
         } else if (col.type === "sfa_vlaue") {
             return <StyledTableCell>{row[planType]?.[col.key]}</StyledTableCell>;
         } else if (col.type === "sfa_plan_vlaue") {
-            return <StyledTableCell>{row[planType].plan?.[col.key]}</StyledTableCell>;
+            return <StyledTableCell>{row[planType]?.plan?.[col.key]}</StyledTableCell>;
         }
         return <StyledTableCell>{row[col.key]}</StyledTableCell>;
     }

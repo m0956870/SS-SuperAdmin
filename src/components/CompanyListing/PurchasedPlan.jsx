@@ -117,7 +117,7 @@ const PurchasedPlan = () => {
     const [tableCols, setTableCols] = useState([
         {
             label: 'Date of Subscription',
-            key: 'startDate',
+            key: 'planPurchaseDate',
             type: "value",
             active: true,
         },
