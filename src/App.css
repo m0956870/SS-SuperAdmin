@@ -469,3 +469,72 @@
 .employee_gl_popup_del {
   background-color: red;
 }
+
+/* action page */
+.action_tab_section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.action_tab_section .tab_container {
+  box-shadow: var(--box-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-radius: 0.2rem;
+  background-color: #fff;
+  color: var(--main-color);
+}
+
+.tab_container .action_tab_right {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.action_tab_left {
+  display: flex;
+  gap: 1rem;
+}
+
+.action_tab_left .action_title {
+  background-color: var(--main-color);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.2rem;
+  font-weight: 500;
+}
+
+.action_tab_left .action_input {
+  display: flex;
+}
+
+.action_tab_left .action_input input {
+  height: 100%;
+  padding: 0 1rem;
+  outline: none;
+  border: 1px solid grey;
+  border-top-left-radius: 0.2rem;
+  border-bottom-left-radius: 0.2rem;
+  width: 7rem;
+}
+
+.action_input .plus_icon {
+  background: lightgray;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2rem;
+  border-top-right-radius: 0.2rem ;
+  border-bottom-right-radius: 0.2rem ;
+}
+
+.action_tab_left .billed_btn {
+  box-shadow: var(--box-shadow);
+}
+.action_tab_left .billed_btn:hover {
+  outline: 1px solid grey;
+  cursor: pointer;
+}

@@ -238,14 +238,14 @@ const CompanyListing = () => {
                     <MdOutlineSettings
                         className="emp_grp_icons"
                         style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
-                    // onClick={() => navigate("/edit_beat", { state: row })}
+                        onClick={() => navigate("/company_action_page", { state: { company: row, planType } })}
                     />
                     {planType !== "Demo Control" && (
-                    <RxCounterClockwiseClock
-                        className="emp_grp_icons"
-                        style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
-                        onClick={() => navigate("/purchased_plan", { state: { company: row, planType } })}
-                    />
+                        <RxCounterClockwiseClock
+                            className="emp_grp_icons"
+                            style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
+                            onClick={() => navigate("/purchased_plan", { state: { company: row, planType } })}
+                        />
                     )}
                 </StyledTableCell>
             )

@@ -1,6 +1,7 @@
 import Dashboard from "./components/Dashboard/Dashboard";
 // company
 import CompanyListing from "./components/CompanyListing/CompanyListing";
+import CompanyActionPage from "./components/CompanyListing/CompanyActionPage";
 import PurchasedPlan from "./components/CompanyListing/PurchasedPlan";
 // user
 import User from "./components/User/User";
@@ -14,6 +15,7 @@ const routeArray = [
   { params: undefined, component: <CompanyListing /> },
   { params: "dashboard", component: <CompanyListing /> },
   { params: "company_listing", component: <CompanyListing /> },
+  { params: "company_action_page", component: <CompanyActionPage /> },
   { params: "purchased_plan", component: <PurchasedPlan /> },
   // user
   { params: "user", component: <User /> },
