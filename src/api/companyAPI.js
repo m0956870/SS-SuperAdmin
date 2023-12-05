@@ -17,6 +17,37 @@ export const getCompany = async (type) => {
     }
 };
 
+export const getCompanyListing = async (data) => {
+    const token = localStorage.getItem("ss_token");
+    let config = {
+        method: "post",
+        url: getBaseUrl() + "root/company/company_listing",
+        headers: { authorization: `Bearer ${token}` },
+        data,
+    };
+    try {
+        return await axios(config);
+    } catch (error) {
+        console.log(error);
+        return error.response;
+    }
+};
+
+export const updateProfile = async (data) => {
+    const token = localStorage.getItem("ss_token");
+    try {
+        var config = {
+            method: "post",
+            url: getBaseUrl() + "auth_api/updateProfile",
+            headers: { authorization: `Bearer ${token}` },
+            data,
+        };
+        return await axios(config);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 // export const addPlan = async (data) => {
 //     let config = {
 //         method: "post",

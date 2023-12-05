@@ -4,7 +4,7 @@ import { getBaseUrl } from "../utils/baseUrl";
 let C_ID;
 
 async function getCID() {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("ss_token");
 
   var config = {
     method: "get",
@@ -31,10 +31,10 @@ export const getCountries = async () => {
 };
 
 const getStateFunc = async (countryID) => {
-  C_ID = C_ID ? C_ID : await getCID()
+  // C_ID = C_ID ? C_ID : await getCID()
 
   try {
-    return await axios(getBaseUrl() + `auth_api/getLocation?country_id=${countryID || C_ID}`);
+    return await axios(getBaseUrl() + `auth_api/getLocation?country_id=${countryID || 101}`);
   } catch (error) {
     console.log(error);
   }

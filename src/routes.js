@@ -10,6 +10,7 @@ import AddUser from "./components/User/AddUser";
 import PlanListing from "./components/Plan/PlanListing";
 import AddPlan from "./components/Plan/AddPlan";
 import EditPlan from "./components/Plan/EditPlan";
+import Action from "./components/Action/Action";
 
 const routeArray = [
   { params: undefined, component: <CompanyListing /> },
@@ -24,6 +25,8 @@ const routeArray = [
   { params: "plan", component: <PlanListing /> },
   { params: "add_plan", component: <AddPlan /> },
   { params: "edit_plan", component: <EditPlan /> },
+  // action
+  { params: "action", component: <Action /> },
 ];
 
 export default routeArray;
