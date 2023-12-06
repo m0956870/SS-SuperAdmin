@@ -61,6 +61,7 @@ export default function Home(props) {
         if (mobileOpen) {
             setMobileOpen(!mobileOpen);
         }
+        console.log("route useeff")
     }, [route])
 
     const [anchorEl, setAnchorEl] = useState(null);

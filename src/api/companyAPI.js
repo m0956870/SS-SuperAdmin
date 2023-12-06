@@ -1,13 +1,13 @@
 import axios from "axios";
 import { getBaseUrl } from "../utils/baseUrl";
 
-export const getCompany = async (type) => {
+export const getCompany = async (data) => {
     const token = localStorage.getItem("ss_token");
     let config = {
         method: "post",
         url: getBaseUrl() + "root/company",
         headers: { authorization: `Bearer ${token}` },
-        data: { type },
+        data,
     };
     try {
         return await axios(config);

@@ -28,18 +28,33 @@ const Action = () => {
     useEffect(() => {
         getCompanyListing().then(res => setcompanyListing(res.data.data));
         getStateFunc().then((res) => setallState(res.data.result));
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        // console.log(selectedCompany)
+        settrackingTime(selectedCompany?.tracking_time);
+    }, [selectedCompany]);
+    useEffect(() => {
+        // console.log(selectedCompany)
+        if (selectedCompany?.[selectedModule].endDate === "") {
+            toast.error("Module is not purchased!")
+        } else {
+            setrenewalDate(selectedCompany?.[selectedModule]?.endDate);
+            settotalUsers(selectedCompany?.[selectedModule]?.userCount);
+            setbilled(selectedCompany?.[selectedModule]?.billed);
+        }
+    }, [selectedModule]);
 
     const stateHandleInput = (e) => {
-        getCompanyListing({ state: e.target.value }).then(res => setcompanyListing(res.data.data))
-    }
+        getCompanyListing({ state: e.target.value }).then(res => setcompanyListing(res.data.data));
+    };
 
     const handleInput = (e, type, count) => {
         if (count) {
             if (type === "total_user") {
                 if (!totalUsers) return;
                 setincreaseUserCount(Number(increaseUserCount) + 1)
-                settotalUsers(Number(increaseUserCount) + 1)
+                settotalUsers(Number(selectedCompany?.[selectedModule]?.userCount) + Number(increaseUserCount) + 1)
                 return;
             }
             else if (type === "grace_period") {
@@ -55,12 +70,12 @@ const Action = () => {
         if (type === "total_user") {
             if (isNaN(e.target.value.trim())) return;
             setincreaseUserCount(e.target.value)
-            settotalUsers(Number(totalUsers) + Number(e.target.value))
+            settotalUsers(Number(selectedCompany?.[selectedModule]?.userCount) + Number(e.target.value))
         } else if (type === "grace_period") {
             if (isNaN(e.target.value.trim())) return;
             setgracePeriodCount(e.target.value)
-            let oldDate = new Date(renewalDate)
-            let addedDate = new Date(oldDate.setDate(oldDate.getDate() + Number(e.target.value)))
+            let oldDate = new Date(selectedCompany?.[selectedModule]?.endDate)
+            let addedDate = new Date(oldDate.setDate(oldDate.getDate() + Number(e.target.value || 0)))
             setrenewalDate(addedDate.toLocaleDateString())
         } else if (type === "tracking_time") {
             settrackingTime(e.target.value)
@@ -70,16 +85,17 @@ const Action = () => {
     }
 
     const saveSettingFunc = async () => {
-        if(!selectedCompany) return toast.error("Please select company first!");
+        if (!selectedCompany) return toast.error("Please select company first!");
+        if (!selectedModule) return toast.error("Please select module first!");
 
         let tempObj = {};
-        tempObj.id = location.company._id;
+        tempObj.id = selectedCompany._id;
         tempObj.tracking_time = trackingTime
-        tempObj[location.planType] = location.company[location.planType];
-        tempObj[location.planType].billed = billed
-        tempObj[location.planType].userCount = totalUsers
-        tempObj[location.planType].endDate = renewalDate
-        console.log(tempObj);
+        tempObj[selectedModule] = selectedCompany[selectedModule];
+        tempObj[selectedModule].billed = billed
+        tempObj[selectedModule].userCount = totalUsers
+        tempObj[selectedModule].endDate = renewalDate
+        // console.log(tempObj);
 
         setbtnLoading(true)
         let { data } = await updateProfile(tempObj);
@@ -93,7 +109,7 @@ const Action = () => {
 
     function formateDate(date) {
         let arr = date?.split("/");
-        return !arr ? "" : `${arr[1]}-${arr[0]}-${arr[2]}`;
+        return arr?.[0] === "" || !arr ? "NA" : `${arr[1]}-${arr[0]}-${arr[2]}`;
     }
 
     return (
@@ -103,7 +119,7 @@ const Action = () => {
                     <div className="icon">
                         <img src={group} alt="icon" />
                     </div>
-                    <div className="title">Action Page</div>
+                    <div className="title">{selectedCompany?.company_name || "Action Page"}</div>
                 </div>
                 <div className="beat_right"></div>
             </div>
@@ -116,10 +132,10 @@ const Action = () => {
                             <option key={state.id} value={state.id}>{state.name}</option>
                         ))}
                     </select>
-                    <select onChange={(e) => setselectedCompany(e.target.value)}>
+                    <select onChange={(e) => setselectedCompany(JSON.parse(e.target.value))}>
                         <option value="">Select Company</option>
                         {companyListing?.map((company) => (
-                            <option key={company._id} value={company._id}>{company.company_name}</option>
+                            <option key={company._id} value={JSON.stringify(company)}>{company.company_name}</option>
                         ))}
                     </select>
                     <select onChange={(e) => setselectedModule(e.target.value)}>

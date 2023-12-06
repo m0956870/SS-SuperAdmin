@@ -14,7 +14,7 @@ const AddUser = () => {
   const [showPermission, setshowPermission] = useState(false)
   const [modulePermissionState, setmodulePermissionState] = useState(['SFA', 'DMS', 'Lead Management', 'Demo Control']);
   const [permissionState, setpermissionState] = useState(['Edit Company', 'Delete Company', 'View Listing', 'View Password', 'Create Plan', 'View Plan', 'Create Company', 'Create User']);
-  const [actionPermissionState, setactionPermissionState] = useState(['Increase User', 'None Billed', 'Grass Period'])
+  const [actionPermissionState, setactionPermissionState] = useState(['Increase User', 'None Billed', 'Grace Period'])
 
   const [profilePic, setprofilePic] = useState(location.state?.image);
   const [demoProfilePic, setdemoProfilePic] = useState();

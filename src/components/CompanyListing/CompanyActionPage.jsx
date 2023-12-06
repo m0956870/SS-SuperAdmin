@@ -23,7 +23,7 @@ const CompanyActionPage = () => {
         if (count) {
             if (type === "total_user") {
                 setincreaseUserCount(Number(increaseUserCount) + 1)
-                settotalUsers(Number(increaseUserCount) + 1)
+                settotalUsers(Number(location?.company?.[location.planType]?.userCount) + Number(increaseUserCount) + 1)
                 return;
             }
             else if (type === "grace_period") {
@@ -43,7 +43,7 @@ const CompanyActionPage = () => {
             if (isNaN(e.target.value.trim())) return;
             setgracePeriodCount(e.target.value)
             let oldDate = new Date(location?.company?.[location.planType]?.endDate)
-            let addedDate = new Date(oldDate.setDate(oldDate.getDate() + Number(e.target.value)))
+            let addedDate = new Date(oldDate.setDate(oldDate.getDate() + Number(e.target.value || 0)))
             setrenewalDate(addedDate.toLocaleDateString())
         } else if (type === "tracking_time") {
             settrackingTime(e.target.value)

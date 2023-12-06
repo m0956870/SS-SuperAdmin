@@ -24,6 +24,7 @@ import { saveToPdf } from "../../utils/saveToPdf";
 import xlsx from "json-as-xlsx";
 import { AdminContext } from "../../App";
 import { getCompany } from "../../api/companyAPI";
+import getStateFunc from "../../api/locationAPI";
 
 const CompanyListing = () => {
     // const {state} = useContext(AdminContext)
@@ -34,6 +35,9 @@ const CompanyListing = () => {
     const [filterDivExtended, setfilterDivExtended] = useState(false);
     const [exportBtnLoading, setexportBtnLoading] = useState(false)
     const [pdfBtnLoading, setpdfBtnLoading] = useState(false)
+
+    const [allState, setallState] = useState([]);
+    const [selectedState, setselectedState] = useState()
 
     const [search, setSearch] = useState("");
     const [activeTab, setactiveTab] = useState("SFA ( Sales for Automation )")
@@ -55,7 +59,8 @@ const CompanyListing = () => {
 
     useEffect(() => {
         // getStateFunc().then((res) => setallState(res.data.result));
-        getCompanyFunc("SFA ( Sales for Automation )")
+        getCompanyFunc({ type: "SFA ( Sales for Automation )" })
+        getStateFunc().then((res) => setallState(res.data.result));
     }, []);
     // useEffect(() => {
     //     fetchAllBeatFunc({ ...filterData, page: pageCount });
@@ -70,27 +75,28 @@ const CompanyListing = () => {
     //         return () => clearTimeout(ID);
     //     }
     // }, [search]);
-    console.log("allData", allData)
+    // console.log("allData", allData)
 
-    const getCompanyFunc = async (type) => {
-        setactiveTab(type);
+    const getCompanyFunc = async (arg) => {
+        setactiveTab(arg.type);
 
-        if (type === "SFA ( Sales for Automation )") {
-            type = "sfa";
+        let type;
+        if (arg.type === "SFA ( Sales for Automation )") {
+            arg.type = "sfa";
             setPlanType("sfa");
-        } else if (type === "DMS ( Distributor Management System )") {
-            type = "dms";
+        } else if (arg.type === "DMS ( Distributor Management System )") {
+            arg.type = "dms";
             setPlanType("dms");
-        } else if (type === "Lead Managment") {
-            type = "lead_management";
+        } else if (arg.type === "Lead Managment") {
+            arg.type = "lead_management";
             setPlanType("lead_management");
-        } else if (type === "Demo Control") {
-            type = "demo_control";
+        } else if (arg.type === "Demo Control") {
+            arg.type = "demo_control";
             setPlanType("Demo Control");
         }
 
         setisLoading(true);
-        let { data } = await getCompany(type);
+        let { data } = await getCompany(arg);
         if (data.status) {
             setallData(data.data);
             setpageLength(data.total_pages);
@@ -100,6 +106,10 @@ const CompanyListing = () => {
         }
         setisLoading(false);
     }
+
+    const filterFunc = () => {
+        getCompanyFunc({ type: planType, state: selectedState })
+    };
 
     const filterAndExportFunc = (type) => {
         setTimeout(() => {
@@ -154,13 +164,13 @@ const CompanyListing = () => {
         },
         {
             label: 'Total Users',
-            key: 'totalUsers',
-            type: "value",
+            key: 'userCount',
+            type: "sfa_vlaue",
             active: true,
         },
         {
             label: 'Registered User',
-            key: 'registeredUsers',
+            key: 'registeredUser',
             type: "value",
             active: true,
         },
@@ -188,12 +198,12 @@ const CompanyListing = () => {
             type: "sfa_vlaue",
             active: true,
         },
-        {
-            label: 'Active User',
-            key: 'beatName',
-            type: "value",
-            active: true,
-        },
+        // {
+        //     label: 'Active User',
+        //     key: 'beatName',
+        //     type: "value",
+        //     active: true,
+        // },
         // {
         //     label: 'Status',
         //     key: "status",
@@ -314,19 +324,19 @@ const CompanyListing = () => {
             </div>
 
             <div className="config_tab">
-                <div onClick={() => getCompanyFunc("SFA ( Sales for Automation )")} className={`confi_div ${activeTab === "SFA ( Sales for Automation )" ? "config_active_tab" : ""}`}
+                <div onClick={() => getCompanyFunc({ type: "SFA ( Sales for Automation )" })} className={`confi_div ${activeTab === "SFA ( Sales for Automation )" ? "config_active_tab" : ""}`}
                 >
                     SFA
                 </div>
-                <div onClick={() => getCompanyFunc("DMS ( Distributor Management System )")} className={`confi_div ${activeTab === "DMS ( Distributor Management System )" ? "config_active_tab" : ""}`}
+                <div onClick={() => getCompanyFunc({ type: "DMS ( Distributor Management System )" })} className={`confi_div ${activeTab === "DMS ( Distributor Management System )" ? "config_active_tab" : ""}`}
                 >
                     DMS
                 </div>
-                <div onClick={() => getCompanyFunc("Lead Managment")} className={`confi_div ${activeTab === "Lead Managment" ? "config_active_tab" : ""}`}
+                <div onClick={() => getCompanyFunc({ type: "Lead Managment" })} className={`confi_div ${activeTab === "Lead Managment" ? "config_active_tab" : ""}`}
                 >
                     Lead Managment
                 </div>
-                <div onClick={() => getCompanyFunc("Demo Control")} className={`confi_div ${activeTab === "Demo Control" ? "config_active_tab" : ""}`}
+                <div onClick={() => getCompanyFunc({ type: "Demo Control" })} className={`confi_div ${activeTab === "Demo Control" ? "config_active_tab" : ""}`}
                 >
                     Demo Control
                 </div>
@@ -334,28 +344,13 @@ const CompanyListing = () => {
 
             <div class="tracking_tabs">
                 <div className="tarcking_tab_left">
-                    {/* <select
-                        name="state"
-                        className="select_btn new_state_select"
-                        onChange={stateHandleInput}
-                        style={{ color: "#000" }}
-                    >
-                        <option value="">All State</option>
+                    <select onChange={(e) => setselectedState(e.target.value)}>
+                        <option value="">Select State</option>
                         {allState?.map((state) => (
                             <option key={state.id} value={state.id}>{state.name}</option>
                         ))}
-                    </select> */}
-                    <select name="" id="">
-                        <option value="">State</option>
-                        <option value="">1</option>
-                        <option value="">2</option>
                     </select>
-                    <select name="" id="">
-                        <option value="">State</option>
-                        <option value="">1</option>
-                        <option value="">2</option>
-                    </select>
-                    <div className="view_btn" /* onClick={() => fetchAllBeatFunc(filterData)}*/ >
+                    <div className="view_btn" onClick={() => filterFunc()} >
                         View
                     </div>
                 </div>
@@ -392,9 +387,9 @@ const CompanyListing = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="add_new_side_btn" onClick={() => navigate("/add_beat")}>
+                        {/* <div className="add_new_side_btn" onClick={() => navigate("/add_beat")}>
                             Add New
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div >
