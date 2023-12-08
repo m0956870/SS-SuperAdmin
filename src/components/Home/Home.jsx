@@ -57,11 +57,12 @@ export default function Home(props) {
 
         getProfileFunc();
     }, []);
+
     useEffect(() => {
         if (mobileOpen) {
             setMobileOpen(!mobileOpen);
         }
-        console.log("route useeff")
+        console.log("state", state?.result)
     }, [route])
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -79,7 +80,8 @@ export default function Home(props) {
 
     const getProfileFunc = async () => {
         let res = await getProfile();
-        if (res.data.status) dispatch({ type: "ADMIN", payload: { ...state, user: res.data.data }, });
+        console.log(res)
+        if (res.data.status) dispatch({ type: "ADMIN", payload: { ...state, result: res.data.data }, });
         else navigate("/login");
     }
 

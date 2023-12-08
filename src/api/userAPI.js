@@ -42,10 +42,16 @@ export const addUser = async (obj) => {
     }
 };
 
-export const updateUser = async (obj) => {
+export const updateUser = async (obj, type) => {
     const fd = new FormData();
-    fd.append("_id", obj._id);
-    fd.append("permissions", JSON.stringify(obj.permissions));
+    if (type === "password") {
+        fd.append("_id", obj._id);
+        fd.append("password", obj.password);
+        fd.append("oldPassword", obj.oldPassword);
+    } else {
+        fd.append("_id", obj._id);
+        fd.append("permissions", JSON.stringify(obj.permissions));
+    }
 
     const token = localStorage.getItem("ss_token");
     let config = {

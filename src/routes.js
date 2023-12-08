@@ -11,6 +11,7 @@ import PlanListing from "./components/Plan/PlanListing";
 import AddPlan from "./components/Plan/AddPlan";
 import EditPlan from "./components/Plan/EditPlan";
 import Action from "./components/Action/Action";
+import ChangePassword from "./components/Auth/ChangePassword";
 
 const routeArray = [
   { params: undefined, component: <CompanyListing /> },
@@ -27,6 +28,7 @@ const routeArray = [
   { params: "edit_plan", component: <EditPlan /> },
   // action
   { params: "action", component: <Action /> },
+  { params: "change_password", component: <ChangePassword /> },
 ];
 
 export default routeArray;
