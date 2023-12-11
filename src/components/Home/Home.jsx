@@ -62,7 +62,7 @@ export default function Home(props) {
         if (mobileOpen) {
             setMobileOpen(!mobileOpen);
         }
-        console.log("state", state?.result)
+        // console.log("homw state", state?.result)
     }, [route])
 
     const [anchorEl, setAnchorEl] = useState(null);

@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import group from "../../images/group.png";
 import { useLocation } from 'react-router-dom';
 import { GoPlus } from "react-icons/go"
 import { CircularProgress } from '@mui/material';
 import { updateProfile } from '../../api/companyAPI';
 import { toast } from 'react-toastify';
+import { AdminContext } from "../../App";
 
 const CompanyActionPage = () => {
+    const { state } = useContext(AdminContext)
+    console.log("action page state", state?.result)
     const [btnLoading, setbtnLoading] = useState(false);
     const { state: location } = useLocation();
     // console.log("location", location)
@@ -20,8 +23,12 @@ const CompanyActionPage = () => {
     const [renewalDate, setrenewalDate] = useState(location?.company?.[location.planType]?.endDate);
 
     const handleInput = (e, type, count) => {
+        if (state?.result?.role !== "super_admin") if (!state?.result?.permissions?.includes("Non Billed")) return toast.error("Permission required from super admin!")
+        if (state?.result?.role !== "super_admin") if (!state?.result?.permissions?.includes("Increase User")) return toast.error("Permission required from super admin!")
+        if (state?.result?.role !== "super_admin") if (!state?.result?.permissions?.includes("Grace Period")) return toast.error("Permission required from super admin!")
         if (count) {
             if (type === "total_user") {
+
                 setincreaseUserCount(Number(increaseUserCount) + 1)
                 settotalUsers(Number(location?.company?.[location.planType]?.userCount) + Number(increaseUserCount) + 1)
                 return;

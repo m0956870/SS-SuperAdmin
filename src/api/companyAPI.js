@@ -76,15 +76,16 @@ export const updateProfile = async (data) => {
 //     }
 // };
 
-// export const deletePlan = async (id) => {
-//     let config = {
-//         method: "delete",
-//         url: getBaseUrl() + `root/plan/${id}`,
-//     };
-//     try {
-//         return await axios(config);
-//     } catch (error) {
-//         console.log(error);
-//         return error.response;
-//     }
-// };
+export const deleteCompany = async (id) => {
+    console.log("firstuyfy")
+    let config = {
+        method: "delete",
+        url: getBaseUrl() + `root/company/${id}`,
+    };
+    try {
+        return await axios(config);
+    } catch (error) {
+        console.log(error);
+        return error.response;
+    }
+};

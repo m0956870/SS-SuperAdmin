@@ -26,8 +26,8 @@ import { FaEye } from "react-icons/fa";
 import { BsFillEyeSlashFill } from "react-icons/bs";
 
 const User = () => {
-    // const {state} = useContext(AdminContext)
-    // console.log(state)
+    const { state, dispatch } = useContext(AdminContext)
+    console.log(state?.result)
     const navigate = useNavigate();
     const [isLoading, setisLoading] = useState(false);
     const pdfView = useRef(null);
@@ -48,8 +48,8 @@ const User = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     const [modulePermissionState, setmodulePermissionState] = useState(['SFA', 'DMS', 'Lead Management', 'Demo Control']);
-    const [permissionState, setpermissionState] = useState(['Edit Company', 'Delete Company', 'View Listing', 'View Password', 'Create Plan', 'View Plan', 'Create Company', 'Create User']);
-    const [actionPermissionState, setactionPermissionState] = useState(['Increase User', 'None Billed', 'Grace Period'])
+    const [permissionState, setpermissionState] = useState(['Edit Company', 'Delete Company', 'View Listing', 'View Password', 'Create Plan', 'View Plan', 'Create User']);
+    const [actionPermissionState, setactionPermissionState] = useState(['Increase User', 'Non Billed', 'Grace Period'])
 
     const [filterData, setfilterData] = useState({
         state: "",
@@ -103,6 +103,7 @@ const User = () => {
         if (data.status) {
             toast.success("User permission updated successfully.")
             fetchAllUsersFunc(filterData)
+            dispatch({ type: "ADMIN", payload: { ...state, result: data.data }, })
         } else {
             console.log(data.message)
         }
@@ -178,6 +179,7 @@ const User = () => {
     }
 
     const passwordToggleFunc = (row) => {
+        if (state?.result?.role !== "super_admin") if (!state?.result?.permissions?.includes('View Password')) return toast.error("Permission is required form super admin!")
         allData.map(user => {
             if (user._id === row._id) {
                 user.showPass = !user.showPass
@@ -229,6 +231,7 @@ const User = () => {
                 <StyledTableCell>
                     <div
                         onClick={() => {
+                            if (state?.result?.role !== "super_admin") return toast.error("Not allowed for users!")
                             setFirstRender(false)
                             setcurrentRow(row)
                             setuserPermissions(row.permissions);
@@ -379,9 +382,11 @@ const User = () => {
             ) : (
                 <div className="" ref={pdfView}>
                     <div style={{ display: "flex", justifyContent: "flex-end" }} >
-                        <div className="user_add_new_side_btn" onClick={() => navigate("/add_user")}>
-                            Add New
-                        </div>
+                        {state?.result?.permissions?.includes("Create User") || state?.result?.role === "super_admin" && (
+                            <div className="user_add_new_side_btn" onClick={() => navigate("/add_user")}>
+                                Add New
+                            </div>  
+                        )}
                     </div>
                     <div className="table_scroll_container">
                         <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -402,7 +407,7 @@ const User = () => {
                         </Table>
                     </div>
 
-                    {allData?.length !== 0 || allData && (
+                    {allData?.length !== 0 && (
                         <div className="top_filter_section" style={{ marginBlock: "1rem" }} >
                             <div className="limit_bottom_info">Showing {((pageCount * filterData.limit) - filterData.limit) + 1} to {totalDataCount > pageCount * filterData.limit ? pageCount * filterData.limit : totalDataCount} of {totalDataCount} entries</div>
                             <div>
@@ -419,7 +424,7 @@ const User = () => {
                         </div>
                     )}
 
-                    {allData?.length === 0 || !allData && (
+                    {allData?.length === 0 && (
                         <div className="no_data">
                             No data
                         </div>

@@ -16,19 +16,19 @@ import TableCell from "@mui/material/TableCell";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { MdOutlineSettings } from "react-icons/md";
 import { RxCounterClockwiseClock } from "react-icons/rx";
-// import { PiClockCounterClockwiseFill } from "react-icons/pi";
+import { Dialog, DialogActions, DialogTitle, DialogContent } from "@mui/material";
 
 import { useRef } from "react";
 import { BsFilterLeft } from "react-icons/bs"
 import { saveToPdf } from "../../utils/saveToPdf";
 import xlsx from "json-as-xlsx";
 import { AdminContext } from "../../App";
-import { getCompany } from "../../api/companyAPI";
+import { deleteCompany, getCompany } from "../../api/companyAPI";
 import getStateFunc from "../../api/locationAPI";
 
 const CompanyListing = () => {
-    // const {state} = useContext(AdminContext)
-    // console.log(state)
+    const { state } = useContext(AdminContext)
+    console.log("company listing state:company", state?.result)
     const navigate = useNavigate();
     const [isLoading, setisLoading] = useState(false);
     const pdfView = useRef(null);
@@ -59,7 +59,7 @@ const CompanyListing = () => {
 
     useEffect(() => {
         // getStateFunc().then((res) => setallState(res.data.result));
-        getCompanyFunc({ type: "SFA ( Sales for Automation )" })
+        getCompanyFunc({ type: "SFA ( Sales for Automation )" });
         getStateFunc().then((res) => setallState(res.data.result));
     }, []);
     // useEffect(() => {
@@ -79,22 +79,27 @@ const CompanyListing = () => {
 
     const getCompanyFunc = async (arg) => {
         setactiveTab(arg.type);
+        setallData([]);
 
-        let type;
+        let permissionType;
         if (arg.type === "SFA ( Sales for Automation )") {
+            permissionType = "SFA";
             arg.type = "sfa";
             setPlanType("sfa");
         } else if (arg.type === "DMS ( Distributor Management System )") {
+            permissionType = "DMS";
             arg.type = "dms";
             setPlanType("dms");
         } else if (arg.type === "Lead Managment") {
+            permissionType = "Lead Management";
             arg.type = "lead_management";
             setPlanType("lead_management");
         } else if (arg.type === "Demo Control") {
+            permissionType = "Demo Control";
             arg.type = "demo_control";
             setPlanType("Demo Control");
         }
-
+        if (state?.result?.role !== "super_admin") if (!state?.result?.permissions.includes(permissionType) || !state?.result?.permissions.includes("View Listing")) return toast.error("Permission required from super admin!")
         setisLoading(true);
         let { data } = await getCompany(arg);
         if (data.status) {
@@ -105,6 +110,18 @@ const CompanyListing = () => {
             console.log(data.message);
         }
         setisLoading(false);
+    }
+
+    const deleteCompanyFunc = async () => {
+        let { data } = await deleteCompany(currentGroup._id);
+        console.log(data)
+        if (data.status) {
+            toast.success(data.message)
+            getCompanyFunc({ type: "SFA ( Sales for Automation )" })
+        } else {
+            console.log(data.message)
+        }
+        setdeletePopup(false);
     }
 
     const filterFunc = () => {
@@ -241,6 +258,7 @@ const CompanyListing = () => {
                         style={{ fontSize: "1rem", color: "red", marginLeft: "0.5rem", }}
                         className=" emp_grp_icons"
                         onClick={() => {
+                            if (state?.result?.role !== "super_admin") if (!state?.result?.permissions.includes("Delete Company")) return toast.error("Permission required from super admin!")
                             setdeletePopup(true);
                             setcurrentGroup(row);
                         }}
@@ -443,8 +461,36 @@ const CompanyListing = () => {
                         </div>
                     )}
                 </div>
-            )
-            }
+            )}
+
+            <Dialog
+                open={deletePopup}
+                aria-labelledby="form-dialog-title"
+                maxWidth="xs"
+                fullWidth="true"
+                onClose={() => setdeletePopup(false)}
+            >
+                <DialogTitle className="dialog_title">
+                    <div>Do you want to delete {currentGroup.company_name}?</div>
+                </DialogTitle>
+                <DialogContent className="cardpopup_content_delete">
+                    <div style={{ display: "flex", gap: "1rem" }}>
+                        <div
+                            className="employee_gl_popup"
+                            onClick={() => setdeletePopup(false)}
+                        >
+                            Cancel
+                        </div>
+                        <div
+                            className="employee_gl_popup_del"
+                            onClick={() => deleteCompanyFunc()}
+                        >
+                            Delete
+                        </div>
+                    </div>
+                </DialogContent>
+                <DialogActions></DialogActions>
+            </Dialog>
         </>
     )
 }

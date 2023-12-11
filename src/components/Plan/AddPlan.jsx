@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import group from "../../images/group.png";
 import { useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import { toast } from "react-toastify";
 import { blankValidator } from "../../utils/Validation";
 import { addPlan } from "../../api/planAPI";
+import { AdminContext } from "../../App";
 
 const AddPlan = () => {
+    const { state } = useContext(AdminContext)
+    console.log("create plan state", state)
     const navigate = useNavigate();
     const [btnLoading, setbtnLoading] = useState(false);
 
@@ -32,6 +35,7 @@ const AddPlan = () => {
     };
 
     const addPlanFunc = async () => {
+        if (state?.result?.role !== "super_admin") if (!state?.result?.permissions?.includes("Add Plan")) return toast.error("Permission required from super admin!")
         let err = false;
         // if (plan.plan_name === "") { seterror((prev) => ({ ...prev, plan_name: "Plan name is required!" })); err = true; }
         // else { seterror((prev) => ({ ...prev, plan_name: "" })); }

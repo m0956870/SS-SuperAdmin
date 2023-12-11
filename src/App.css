@@ -129,6 +129,7 @@
   padding: 0.7rem 2rem;
   border-radius: 0.4rem;
   font-weight: 500;
+  cursor: pointer;
 }
 
 .config_tab .config_active_tab {

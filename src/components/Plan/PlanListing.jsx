@@ -24,8 +24,8 @@ import { AdminContext } from "../../App";
 import { deletePlan, fetchPlan } from "../../api/planAPI";
 
 const PlanListing = () => {
-    // const {state} = useContext(AdminContext)
-    // console.log(state)
+    const { state } = useContext(AdminContext)
+    console.log("plan state", state)
     const navigate = useNavigate();
     const [isLoading, setisLoading] = useState(false);
     const pdfView = useRef(null);
@@ -69,8 +69,9 @@ const PlanListing = () => {
     // }, [search]);
 
     const fetchAllPlanFunc = async (filterData) => {
-        setisLoading(true);
+        if (state?.result?.role !== "super_admin") if (!state?.result?.permissions?.includes('View Plan')) return toast.error("Permission required from super admin!")
 
+        setisLoading(true);
         let { data } = await fetchPlan(filterData);
         if (data.status) {
             setallData(data.data);
@@ -331,9 +332,12 @@ const PlanListing = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="add_new_side_btn" onClick={() => navigate("/add_plan")}>
-                            Add New
-                        </div>
+
+                        {state?.result?.role === "super_admin" || !state?.result?.permissions?.includes("Create Plan") && (
+                            < div className="add_new_side_btn" onClick={() => navigate("/add_plan")}>
+                                Add New
+                            </div>
+                        )}
                     </div>
                 </div>
             </div >
@@ -365,7 +369,7 @@ const PlanListing = () => {
                             </Table>
                         </div>
 
-                        {allData?.length === 0 || allData && (
+                        {allData?.length !== 0 && (
                             <div className="top_filter_section" style={{ marginBlock: "1rem" }} >
                                 <div className="limit_bottom_info">Showing {((pageCount * filterData.limit) - filterData.limit) + 1} to {totalDataCount > pageCount * filterData.limit ? pageCount * filterData.limit : totalDataCount} of {totalDataCount} entries</div>
                                 <div>
@@ -382,7 +386,7 @@ const PlanListing = () => {
                             </div>
                         )}
 
-                        {allData?.length === 0 || !allData && (
+                        {allData?.length === 0 && (
                             <div className="no_data">
                                 No data
                             </div>

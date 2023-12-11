@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import group from "../../images/group.png";
 import { Avatar, CircularProgress } from '@mui/material';
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { addUser } from '../../api/userAPI';
 import { toast } from 'react-toastify';
+import { AdminContext } from '../../App';
 
 const AddUser = () => {
+  const { state } = useContext(AdminContext)
+  console.log("create user state", state)
   const location = useLocation();
   const navigate = useNavigate();
   const [btnLoading, setbtnLoading] = useState(false);
@@ -14,11 +17,11 @@ const AddUser = () => {
   const [showPermission, setshowPermission] = useState(false)
   const [modulePermissionState, setmodulePermissionState] = useState(['SFA', 'DMS', 'Lead Management', 'Demo Control']);
   const [permissionState, setpermissionState] = useState(['Edit Company', 'Delete Company', 'View Listing', 'View Password', 'Create Plan', 'View Plan', 'Create Company', 'Create User']);
-  const [actionPermissionState, setactionPermissionState] = useState(['Increase User', 'None Billed', 'Grace Period'])
+  const [actionPermissionState, setactionPermissionState] = useState(['Increase User', 'Non Billed', 'Grace Period'])
 
   const [profilePic, setprofilePic] = useState(location.state?.image);
   const [demoProfilePic, setdemoProfilePic] = useState();
-  const [userPermissions, setuserPermissions] = useState([])
+  const [userPermissions, setuserPermissions] = useState([]);
 
   const [user, setuser] = useState({
     first_name: "",
@@ -56,6 +59,8 @@ const AddUser = () => {
   }
 
   const addUserFunc = async () => {
+    if (!state?.result?.permissions?.includes("Create User")) return toast.error("Permission required from super admin!")
+
     let err = false;
     if (user.first_name === "") { seterror((prev) => ({ ...prev, first_name: "First name is required!" })); err = true; }
     else { seterror((prev) => ({ ...prev, first_name: "" })); }
