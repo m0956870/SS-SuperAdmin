@@ -333,7 +333,7 @@ const PlanListing = () => {
                             </div>
                         </div>
 
-                        {state?.result?.role === "super_admin" || !state?.result?.permissions?.includes("Create Plan") && (
+                        {state?.result?.permissions?.includes("Create Plan") || state?.result?.role === "super_admin" && (
                             < div className="add_new_side_btn" onClick={() => navigate("/add_plan")}>
                                 Add New
                             </div>
