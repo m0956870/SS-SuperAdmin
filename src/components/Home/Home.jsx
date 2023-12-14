@@ -80,7 +80,7 @@ export default function Home(props) {
 
     const getProfileFunc = async () => {
         let res = await getProfile();
-        console.log(res)
+        // console.log(res)
         if (res.data.status) dispatch({ type: "ADMIN", payload: { ...state, result: res.data.data }, });
         else navigate("/login");
     }

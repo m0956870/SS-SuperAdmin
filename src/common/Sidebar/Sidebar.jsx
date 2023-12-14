@@ -63,6 +63,17 @@ const Sidebar = ({ open }) => {
         { name: "Action", link: "/action" },
       ],
     },
+    {
+      index: 5,
+      icon: action_img,
+      icon_white: action_img,
+      title: "Banners",
+      navigate: "banner",
+      show: false,
+      subItems: [
+        { name: "Action", link: "/banner" },
+      ],
+    },
   ]);
 
   const navigateFunc = (item) => {

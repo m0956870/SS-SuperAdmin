@@ -22,10 +22,11 @@ import { saveToPdf } from "../../utils/saveToPdf";
 import xlsx from "json-as-xlsx";
 import { AdminContext } from "../../App";
 import { deletePlan, fetchPlan } from "../../api/planAPI";
+import { deleteBanner, fetchBanner } from "../../api/bannerAPI";
 
-const PlanListing = () => {
+const Banner = () => {
     const { state } = useContext(AdminContext)
-    console.log("plan state", state)
+    // console.log("plan state", state)
     const navigate = useNavigate();
     const [isLoading, setisLoading] = useState(false);
     const pdfView = useRef(null);
@@ -34,8 +35,6 @@ const PlanListing = () => {
     const [pdfBtnLoading, setpdfBtnLoading] = useState(false)
 
     const [search, setSearch] = useState("");
-    const [activeTab, setactiveTab] = useState("SFA ( Sales for Automation )")
-
     const [allData, setallData] = useState([])
     const [pageCount, setpageCount] = useState(1);
     const [pageLength, setpageLength] = useState();
@@ -45,7 +44,6 @@ const PlanListing = () => {
     const [currentGroup, setcurrentGroup] = useState({});
 
     const [filterData, setfilterData] = useState({
-        state: "",
         page: pageCount,
         limit: "10",
     })
@@ -55,24 +53,26 @@ const PlanListing = () => {
     // }, []);
 
     useEffect(() => {
-        fetchAllPlanFunc({ ...filterData, page: pageCount });
+        fetchAllBannerFunc({ ...filterData, page: pageCount });
     }, [pageCount]);
 
     // useEffect(() => {
     //     if (search !== "") {
     //         let ID = setTimeout(() => {
-    //             fetchAllPlanFunc({ ...filterData, search })
+    //             fetchAllBannerFunc({ ...filterData, search })
     //         }, 1000);
 
     //         return () => clearTimeout(ID);
     //     }
     // }, [search]);
 
-    const fetchAllPlanFunc = async (filterData) => {
-        if (state?.result?.role !== "super_admin") if (!state?.result?.permissions?.includes('View Plan')) return toast.error("Permission required from super admin!")
+    console.log("allData", allData)
+
+    const fetchAllBannerFunc = async (filterData) => {
+        // if (state?.result?.role !== "super_admin") if (!state?.result?.permissions?.includes('View Plan')) return toast.error("Permission required from super admin!")
 
         setisLoading(true);
-        let { data } = await fetchPlan(filterData);
+        let { data } = await fetchBanner(filterData);
         if (data.status) {
             setallData(data.data);
             settotalDataCount(data.total_users);
@@ -83,10 +83,10 @@ const PlanListing = () => {
         setisLoading(false);
     }
 
-    const deletePlanFunc = async () => {
-        let { data } = await deletePlan(currentGroup._id);
+    const deleteBannerFunc = async () => {
+        let { data } = await deleteBanner(currentGroup._id);
         if (data.status) {
-            fetchAllPlanFunc(filterData)
+            fetchAllBannerFunc(filterData)
             toast.success(data.messaage)
         } else {
             console.log(data.messaage)
@@ -116,38 +116,20 @@ const PlanListing = () => {
     // Filter
     const [tableCols, setTableCols] = useState([
         {
-            label: 'Plan Name',
-            key: 'plan_name',
-            type: "plan_value",
+            label: 'Banner Image',
+            key: 'banner_image',
+            type: "image_value",
             active: true,
         },
         {
-            label: 'Minimum Billing Frequency',
-            key: 'billing_frequency',
+            label: 'Banner Name',
+            key: 'banner_name',
             type: "value",
             active: true,
         },
         {
-            label: 'features',
-            key: 'features',
-            type: "value",
-            active: true,
-        },
-        {
-            label: 'Cost Per User / Month',
-            key: "cost_per_user_per_month",
-            type: "value",
-            active: true,
-        },
-        {
-            label: 'Dicsount',
-            key: "discount",
-            type: "value",
-            active: true,
-        },
-        {
-            label: 'Minimum User Required',
-            key: "minimum_user",
+            label: 'Category Name',
+            key: 'category_name',
             type: "value",
             active: true,
         },
@@ -182,7 +164,7 @@ const PlanListing = () => {
                     <BorderColorIcon
                         style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
                         className="emp_grp_icons"
-                        onClick={() => navigate("/edit_plan", { state: row })}
+                        onClick={() => navigate("/edit_banner", { state: row })}
                     />
                     <DeleteIcon
                         style={{ fontSize: "1rem", color: "red", marginLeft: "0.5rem", }}
@@ -194,8 +176,8 @@ const PlanListing = () => {
                     />
                 </StyledTableCell>
             )
-        } else if (col.type === "plan_value") {
-            return <StyledTableCell>{String(row[col.key]).toUpperCase().split("_").join(" ")}</StyledTableCell>;
+        } else if (col.type === "image_value") {
+            return <StyledTableCell onClick={() => console.log(row[col.key])}  > {row[col.key] ? <img style={{ height: "2rem", width: "3rem" }} src={row[col.key]} alt="" /> : null}</StyledTableCell>;
         }
         return <StyledTableCell>{row[col.key]}</StyledTableCell>;
     }
@@ -237,7 +219,7 @@ const PlanListing = () => {
                     <div className="icon">
                         <img src={group} alt="icon" />
                     </div>
-                    <div className="title">Plan Listing</div>
+                    <div className="title">Banner Listing</div>
                 </div>
                 <div className="beat_right">
                     <div className="search">
@@ -251,25 +233,6 @@ const PlanListing = () => {
                     </div>
                 </div>
             </div>
-
-            {/* <div className="config_tab">
-                <div onClick={() => setactiveTab("SFA ( Sales for Automation )")} className={`confi_div ${activeTab === "SFA ( Sales for Automation )" ? "config_active_tab" : ""}`}
-                >
-                    SFA
-                </div>
-                <div onClick={() => setactiveTab("DMS ( Distributor Management System )")} className={`confi_div ${activeTab === "DMS ( Distributor Management System )" ? "config_active_tab" : ""}`}
-                >
-                    DMS
-                </div>
-                <div onClick={() => setactiveTab("Lead Managment")} className={`confi_div ${activeTab === "Lead Managment" ? "config_active_tab" : ""}`}
-                >
-                    Lead Managment
-                </div>
-                <div onClick={() => setactiveTab("Demo Control")} className={`confi_div ${activeTab === "Demo Control" ? "config_active_tab" : ""}`}
-                >
-                    Demo Control
-                </div>
-            </div> */}
 
             <div class="tracking_tabs">
                 <div className="top_filter_section">
@@ -307,7 +270,7 @@ const PlanListing = () => {
                         </div>
 
                         {state?.result?.permissions?.includes("Create Plan") || state?.result?.role === "super_admin" && (
-                            < div className="add_new_side_btn" onClick={() => navigate("/add_plan")}>
+                            < div className="add_new_side_btn" onClick={() => navigate("/add_banner")}>
                                 Add New
                             </div>
                         )}
@@ -316,56 +279,55 @@ const PlanListing = () => {
             </div >
 
             {/* table ui */}
-            {
-                isLoading ? (
-                    <div style={{ margin: "auto", }} >
-                        <CircularProgress />
+            {isLoading ? (
+                <div style={{ margin: "auto", }} >
+                    <CircularProgress />
+                </div>
+            ) : (
+                <div className="" ref={pdfView}>
+                    <div className="table_scroll_container">
+                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>S. No.</StyledTableCell>
+                                    {filterCols?.map(col => <StyledTableCell>{col.label}</StyledTableCell>)}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {allData?.map((row, i) => (
+                                    <StyledTableRow key={i} >
+                                        <StyledTableCell>{((pageCount * filterData.limit) - filterData.limit) + (i + 1)}</StyledTableCell>
+                                        {filterCols?.map(col => <TCComponent data={{ row, col }} />)}
+                                    </StyledTableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
                     </div>
-                ) : (
-                    <div className="" ref={pdfView}>
-                        <div className="table_scroll_container">
-                            <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                                <TableHead>
-                                    <TableRow>
-                                        <StyledTableCell>S. No.</StyledTableCell>
-                                        {filterCols?.map(col => <StyledTableCell>{col.label}</StyledTableCell>)}
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {allData?.map((row, i) => (
-                                        <StyledTableRow key={i} >
-                                            <StyledTableCell>{((pageCount * filterData.limit) - filterData.limit) + (i + 1)}</StyledTableCell>
-                                            {filterCols?.map(col => <TCComponent data={{ row, col }} />)}
-                                        </StyledTableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+
+                    {allData?.length !== 0 && (
+                        <div className="top_filter_section" style={{ marginBlock: "1rem" }} >
+                            <div className="limit_bottom_info">Showing {((pageCount * filterData.limit) - filterData.limit) + 1} to {totalDataCount > pageCount * filterData.limit ? pageCount * filterData.limit : totalDataCount} of {totalDataCount} entries</div>
+                            <div>
+                                <Pagination
+                                    count={pageLength}
+                                    size="medium"
+                                    color="primary"
+                                    shape="rounded"
+                                    variant="outlined"
+                                    onChange={(e, value) => setpageCount(value)}
+                                    page={pageCount}
+                                />
+                            </div>
                         </div>
+                    )}
 
-                        {allData?.length !== 0 && (
-                            <div className="top_filter_section" style={{ marginBlock: "1rem" }} >
-                                <div className="limit_bottom_info">Showing {((pageCount * filterData.limit) - filterData.limit) + 1} to {totalDataCount > pageCount * filterData.limit ? pageCount * filterData.limit : totalDataCount} of {totalDataCount} entries</div>
-                                <div>
-                                    <Pagination
-                                        count={pageLength}
-                                        size="medium"
-                                        color="primary"
-                                        shape="rounded"
-                                        variant="outlined"
-                                        onChange={(e, value) => setpageCount(value)}
-                                        page={pageCount}
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {allData?.length === 0 && (
-                            <div className="no_data">
-                                No data
-                            </div>
-                        )}
-                    </div>
-                )
+                    {allData?.length === 0 && (
+                        <div className="no_data">
+                            No data
+                        </div>
+                    )}
+                </div>
+            )
             }
 
             <Dialog
@@ -376,7 +338,7 @@ const PlanListing = () => {
                 onClose={() => setdeletePopup(false)}
             >
                 <DialogTitle className="dialog_title">
-                    <div>Do you want to delete {currentGroup.plan_name}-{currentGroup.features}?</div>
+                    <div>Do you want to delete {currentGroup?.banner_name}?</div>
                 </DialogTitle>
                 <DialogContent className="cardpopup_content_delete">
                     <div style={{ display: "flex", gap: "1rem" }}>
@@ -388,7 +350,7 @@ const PlanListing = () => {
                         </div>
                         <div
                             className="employee_gl_popup_del"
-                            onClick={() => deletePlanFunc()}
+                            onClick={() => deleteBannerFunc()}
                         >
                             Delete
                         </div>
@@ -400,4 +362,4 @@ const PlanListing = () => {
     )
 }
 
-export default PlanListing
+export default Banner

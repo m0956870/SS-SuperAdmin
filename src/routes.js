@@ -3,6 +3,7 @@ import Dashboard from "./components/Dashboard/Dashboard";
 import CompanyListing from "./components/CompanyListing/CompanyListing";
 import CompanyActionPage from "./components/CompanyListing/CompanyActionPage";
 import PurchasedPlan from "./components/CompanyListing/PurchasedPlan";
+import ChangePassword from "./components/Auth/ChangePassword";
 // user
 import User from "./components/User/User";
 import AddUser from "./components/User/AddUser";
@@ -10,8 +11,12 @@ import AddUser from "./components/User/AddUser";
 import PlanListing from "./components/Plan/PlanListing";
 import AddPlan from "./components/Plan/AddPlan";
 import EditPlan from "./components/Plan/EditPlan";
+// action
 import Action from "./components/Action/Action";
-import ChangePassword from "./components/Auth/ChangePassword";
+// banner
+import Banner from "./components/Banner/Banner";
+import AddBanner from "./components/Banner/AddBanner";
+import EditBanner from "./components/Banner/EditBanner";
 
 const routeArray = [
   { params: undefined, component: <CompanyListing /> },
@@ -29,6 +34,10 @@ const routeArray = [
   // action
   { params: "action", component: <Action /> },
   { params: "change_password", component: <ChangePassword /> },
+  // banner
+  { params: "banner", component: <Banner /> },
+  { params: "add_banner", component: <AddBanner /> },
+  { params: "edit_banner", component: <EditBanner /> },
 ];
 
 export default routeArray;

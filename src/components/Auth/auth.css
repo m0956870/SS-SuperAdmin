@@ -78,6 +78,14 @@
   border-radius: 0.3rem;
 }
 
+.input_group .select {
+  width: 100%;
+  border: 1px solid lightgrey;
+  padding: 0.8rem;
+  outline: none;
+  border-radius: 0.3rem;
+}
+
 .input_error {
   color: red;
 }
