@@ -66,7 +66,7 @@ const Banner = () => {
     //     }
     // }, [search]);
 
-    console.log("allData", allData)
+    // console.log("allData", allData)
 
     const fetchAllBannerFunc = async (filterData) => {
         // if (state?.result?.role !== "super_admin") if (!state?.result?.permissions?.includes('View Plan')) return toast.error("Permission required from super admin!")
@@ -177,7 +177,7 @@ const Banner = () => {
                 </StyledTableCell>
             )
         } else if (col.type === "image_value") {
-            return <StyledTableCell onClick={() => console.log(row[col.key])}  > {row[col.key] ? <img style={{ height: "2rem", width: "3rem" }} src={row[col.key]} alt="" /> : null}</StyledTableCell>;
+            return <StyledTableCell> {row[col.key] ? <img style={{ height: "2rem", width: "3rem" }} src={row[col.key]} alt="" /> : null}</StyledTableCell>;
         }
         return <StyledTableCell>{row[col.key]}</StyledTableCell>;
     }

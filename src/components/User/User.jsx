@@ -61,8 +61,11 @@ const User = () => {
     //     getStateFunc().then((res) => setallState(res.data.result));
     // }, []);
     useEffect(() => {
-        fetchAllUsersFunc({ ...filterData, page: pageCount });
+        if (state) fetchAllUsersFunc({ ...filterData, page: pageCount });
     }, [pageCount]);
+    useEffect(() => {
+        if (state) fetchAllUsersFunc({ ...filterData, page: pageCount });
+    }, [state]);
 
     useEffect(() => {
         if (search !== "") {
@@ -385,7 +388,7 @@ const User = () => {
                         {state?.result?.permissions?.includes("Create User") || state?.result?.role === "super_admin" && (
                             <div className="user_add_new_side_btn" onClick={() => navigate("/add_user")}>
                                 Add New
-                            </div>  
+                            </div>
                         )}
                     </div>
                     <div className="table_scroll_container">

@@ -13,6 +13,7 @@ import company_lisitng_img from "../../images/Company listing.png";
 import user_img from "../../images/user.png";
 import plan_img from "../../images/plan.png";
 import action_img from "../../images/action.png";
+import scheme_img from "../../images/scheme.png";
 
 const Sidebar = ({ open }) => {
   const navigate = useNavigate();
@@ -65,8 +66,8 @@ const Sidebar = ({ open }) => {
     },
     {
       index: 5,
-      icon: action_img,
-      icon_white: action_img,
+      icon: scheme_img,
+      icon_white: scheme_img,
       title: "Banners",
       navigate: "banner",
       show: false,

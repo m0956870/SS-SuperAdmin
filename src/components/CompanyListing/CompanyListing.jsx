@@ -58,10 +58,12 @@ const CompanyListing = () => {
     })
 
     useEffect(() => {
-        // getStateFunc().then((res) => setallState(res.data.result));
-        getCompanyFunc({ type: "SFA ( Sales for Automation )" });
+        // getCompanyFunc({ type: "SFA ( Sales for Automation )" });
         getStateFunc().then((res) => setallState(res.data.result));
     }, []);
+    useEffect(() => {
+        if (state) getCompanyFunc({ type: "SFA ( Sales for Automation )" });
+    }, [state]);
     // useEffect(() => {
     //     fetchAllBeatFunc({ ...filterData, page: pageCount });
     // }, [pageCount]);

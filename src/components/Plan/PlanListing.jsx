@@ -25,7 +25,7 @@ import { deletePlan, fetchPlan } from "../../api/planAPI";
 
 const PlanListing = () => {
     const { state } = useContext(AdminContext)
-    console.log("plan state", state)
+    // console.log("plan state", state)
     const navigate = useNavigate();
     const [isLoading, setisLoading] = useState(false);
     const pdfView = useRef(null);
@@ -55,8 +55,13 @@ const PlanListing = () => {
     // }, []);
 
     useEffect(() => {
-        fetchAllPlanFunc({ ...filterData, page: pageCount });
+        if (state) {
+            fetchAllPlanFunc({ ...filterData, page: pageCount });
+        }
     }, [pageCount]);
+    useEffect(() => {
+        if (state) fetchAllPlanFunc({ ...filterData, page: pageCount });
+    }, [state]);
 
     // useEffect(() => {
     //     if (search !== "") {
