@@ -9,7 +9,7 @@ import { AdminContext } from '../../App';
 
 const AddUser = () => {
   const { state } = useContext(AdminContext)
-  console.log("create user state", state)
+  // console.log("create user state", state)
   const location = useLocation();
   const navigate = useNavigate();
   const [btnLoading, setbtnLoading] = useState(false);

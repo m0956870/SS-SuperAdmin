@@ -113,8 +113,8 @@ const PlanListing = () => {
         } else if (type === "pdf") {
             setpdfBtnLoading(true)
             setfilterDivExtended(false);
-            // if (allRouts.length < 1) return toast.error("Report list is empty!");
-            // return saveToPdf(pdfView, "Monthly Attendence Report (All Employee)");
+            if (allData.length < 1) return toast.error("list is empty!");
+            return saveToPdf(pdfView, "Plan Listing");
         }
     }
 

@@ -27,7 +27,7 @@ import { BsFillEyeSlashFill } from "react-icons/bs";
 
 const User = () => {
     const { state, dispatch } = useContext(AdminContext)
-    console.log(state?.result)
+    // console.log(state?.result)
     const navigate = useNavigate();
     const [isLoading, setisLoading] = useState(false);
     const pdfView = useRef(null);

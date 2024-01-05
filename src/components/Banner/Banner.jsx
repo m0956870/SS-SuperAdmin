@@ -66,8 +66,6 @@ const Banner = () => {
     //     }
     // }, [search]);
 
-    // console.log("allData", allData)
-
     const fetchAllBannerFunc = async (filterData) => {
         // if (state?.result?.role !== "super_admin") if (!state?.result?.permissions?.includes('View Plan')) return toast.error("Permission required from super admin!")
 
@@ -108,8 +106,8 @@ const Banner = () => {
         } else if (type === "pdf") {
             setpdfBtnLoading(true)
             setfilterDivExtended(false);
-            // if (allRouts.length < 1) return toast.error("Report list is empty!");
-            // return saveToPdf(pdfView, "Monthly Attendence Report (All Employee)");
+            if (allData.length < 1) return toast.error("list is empty!");
+            return saveToPdf(pdfView, "Banner Listing");
         }
     }
 

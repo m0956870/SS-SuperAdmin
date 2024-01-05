@@ -17,6 +17,7 @@ import Action from "./components/Action/Action";
 import Banner from "./components/Banner/Banner";
 import AddBanner from "./components/Banner/AddBanner";
 import EditBanner from "./components/Banner/EditBanner";
+import Profile from "./components/Profile/Profile";
 
 const routeArray = [
   { params: undefined, component: <CompanyListing /> },
@@ -34,6 +35,7 @@ const routeArray = [
   // action
   { params: "action", component: <Action /> },
   { params: "change_password", component: <ChangePassword /> },
+  { params: "profile", component: <Profile /> },
   // banner
   { params: "banner", component: <Banner /> },
   { params: "add_banner", component: <AddBanner /> },
