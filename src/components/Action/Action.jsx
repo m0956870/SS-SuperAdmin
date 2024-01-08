@@ -39,13 +39,13 @@ const Action = () => {
     }, [selectedCompany]);
     useEffect(() => {
         // console.log(selectedCompany)
-        if (selectedCompany?.[selectedModule].endDate === "") {
-            toast.error("Module is not purchased!")
-        } else {
-            setrenewalDate(selectedCompany?.[selectedModule]?.endDate);
-            settotalUsers(selectedCompany?.[selectedModule]?.userCount);
-            setbilled(selectedCompany?.[selectedModule]?.billed);
-        }
+        // if (selectedCompany?.[selectedModule].endDate === "") {
+        //     toast.error("Module is not purchased!")
+        // } else {
+        setrenewalDate(selectedCompany?.[selectedModule]?.endDate);
+        settotalUsers(selectedCompany?.[selectedModule]?.userCount);
+        setbilled(selectedCompany?.[selectedModule]?.billed);
+        // }
     }, [selectedModule]);
 
     const stateHandleInput = (e) => {
@@ -197,6 +197,7 @@ const Action = () => {
                         <div className="action_title">Tracking Time</div>
                         <div className="action_input">
                             <select value={trackingTime} onChange={(e) => handleInput(e, "tracking_time")} style={{ width: "8.5rem" }} >
+                                <option value="2">2 min</option>
                                 <option value="5">5 min</option>
                                 <option value="10">10 min</option>
                                 <option value="15">15 min</option>
