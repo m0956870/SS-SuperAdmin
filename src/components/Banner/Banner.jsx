@@ -267,11 +267,9 @@ const Banner = () => {
                             </div>
                         </div>
 
-                        {state?.result?.permissions?.includes("Create Plan") || state?.result?.role === "super_admin" && (
-                            < div className="add_new_side_btn" onClick={() => navigate("/add_banner")}>
-                                Add New
-                            </div>
-                        )}
+                        < div className="add_new_side_btn" onClick={() => navigate("/add_banner")}>
+                            Add New
+                        </div>
                     </div>
                 </div>
             </div >

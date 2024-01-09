@@ -5,7 +5,7 @@ export const fetchBanner = async (data) => {
     const token = localStorage.getItem("ss_token");
     let config = {
         method: "post",
-        url: getBaseUrl() + "auth_api/getBanner",
+        url: getBaseUrl() + "auth_api/getBanner_sa",
         headers: { authorization: `Bearer ${token}` },
         data,
     };
