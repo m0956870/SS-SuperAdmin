@@ -67,7 +67,6 @@ const ChangePassword = () => {
         let tempData = { _id: state.result._id, oldPassword: user.oldPassword, password: user.newPassword, };
         setbtnLoading(true);
         let { data } = await updateUser(tempData, "password");
-        console.log(data)
         if (data.status) {
             toast.success("Password Updated Successfully!");
             setUser({ oldPassword: "", newPassword: "", cPassword: "", })

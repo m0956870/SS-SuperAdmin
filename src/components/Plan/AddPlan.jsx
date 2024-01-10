@@ -9,7 +9,7 @@ import { AdminContext } from "../../App";
 
 const AddPlan = () => {
     const { state } = useContext(AdminContext)
-    console.log("create plan state", state)
+    // console.log("create plan state", state)
     const navigate = useNavigate();
     const [btnLoading, setbtnLoading] = useState(false);
 

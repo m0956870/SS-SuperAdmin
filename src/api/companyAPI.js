@@ -77,7 +77,6 @@ export const updateProfile = async (data) => {
 // };
 
 export const deleteCompany = async (id) => {
-    console.log("firstuyfy")
     let config = {
         method: "delete",
         url: getBaseUrl() + `root/company/${id}`,

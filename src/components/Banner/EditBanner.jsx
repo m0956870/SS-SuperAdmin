@@ -11,7 +11,6 @@ const EditBanner = () => {
     const { state } = useContext(AdminContext);
     // console.log("create banner state", state)
     const location = useLocation();
-    console.log(location)
     const navigate = useNavigate();
     const [btnLoading, setbtnLoading] = useState(false);
 

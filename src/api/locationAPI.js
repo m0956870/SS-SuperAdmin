@@ -51,14 +51,12 @@ export const getCityFunc = async (stateID, countryID) => {
 };
 
 export const getDistrictFunc = async (state, district) => {
-  // console.log(state, district);
   const p_id = state;
   const subp_id = district;
   const url = getBaseUrl() + `auth_api/getLocation?p_id=${p_id}&subp_id=${subp_id}`;
 
   try {
     let res = await axios.get(url);
-    // console.log("api district's city", res);
     return res;
   } catch (error) {
     console.log(error);

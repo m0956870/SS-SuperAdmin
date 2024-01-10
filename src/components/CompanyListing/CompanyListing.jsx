@@ -17,6 +17,8 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import { MdOutlineSettings } from "react-icons/md";
 import { RxCounterClockwiseClock } from "react-icons/rx";
 import { Dialog, DialogActions, DialogTitle, DialogContent } from "@mui/material";
+import { FaEye } from "react-icons/fa";
+import { BsFillEyeSlashFill } from "react-icons/bs";
 
 import { useRef } from "react";
 import { BsFilterLeft } from "react-icons/bs"
@@ -28,7 +30,7 @@ import getStateFunc from "../../api/locationAPI";
 
 const CompanyListing = () => {
     const { state } = useContext(AdminContext)
-    console.log("company listing state:company", state?.result)
+    // console.log("company listing state:company", state?.result)
     const navigate = useNavigate();
     const [isLoading, setisLoading] = useState(false);
     const pdfView = useRef(null);
@@ -105,6 +107,7 @@ const CompanyListing = () => {
         setisLoading(true);
         let { data } = await getCompany(arg);
         if (data.status) {
+            data.data.map(user => { user.showPass = false })
             setallData(data.data);
             setpageLength(data.total_pages);
             settotalDataCount(data.total_users);
@@ -116,7 +119,6 @@ const CompanyListing = () => {
 
     const deleteCompanyFunc = async () => {
         let { data } = await deleteCompany(currentGroup._id);
-        console.log(data)
         if (data.status) {
             toast.success(data.message)
             getCompanyFunc({ type: "SFA ( Sales for Automation )" })
@@ -124,6 +126,16 @@ const CompanyListing = () => {
             console.log(data.message)
         }
         setdeletePopup(false);
+    }
+
+    const passwordToggleFunc = (row) => {
+        if (state?.result?.role !== "super_admin") if (!state?.result?.permissions?.includes('View Password')) return toast.error("Permission is required form super admin!")
+        allData.map(user => {
+            if (user._id === row._id) {
+                user.showPass = !user.showPass
+            }
+        })
+        setallData([...allData])
     }
 
     const filterFunc = () => {
@@ -179,6 +191,12 @@ const CompanyListing = () => {
             label: 'Email',
             key: "email",
             type: "value",
+            active: true,
+        },
+        {
+            label: 'Password',
+            key: 'password',
+            type: "password_value",
             active: true,
         },
         {
@@ -277,6 +295,25 @@ const CompanyListing = () => {
                             onClick={() => navigate("/purchased_plan", { state: { company: row, planType } })}
                         />
                     )}
+                </StyledTableCell>
+            )
+        } else if (col.type === "password_value") {
+            return (
+                <StyledTableCell style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} >
+                    <span>{row.showPass ? row[col.key] : row[col.key].split("").map(x => x = "*").join("")}</span>
+                    <span>
+                        {row.showPass ? (
+                            <BsFillEyeSlashFill
+                                style={{ margin: "0 0.3rem", fontSize: "1rem", cursor: "pointer", }}
+                                onClick={() => passwordToggleFunc(row)}
+                            />
+                        ) : (
+                            <FaEye
+                                style={{ margin: "0 0.3rem", fontSize: "1rem", cursor: "pointer", }}
+                                onClick={() => passwordToggleFunc(row)}
+                            />
+                        )}
+                    </span>
                 </StyledTableCell>
             )
         } else if (col.type === "company_code_value") {

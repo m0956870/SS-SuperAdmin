@@ -9,7 +9,7 @@ import { updateProfile } from '../../api/auth';
 
 const Profile = () => {
     const { state, dispatch } = useContext(AdminContext)
-    console.log("profile state", state)
+    // console.log("profile state", state)
     const location = useLocation();
     const navigate = useNavigate();
     const [btnLoading, setbtnLoading] = useState(false);
@@ -36,7 +36,7 @@ const Profile = () => {
             })
         }
     }, [])
-    console.log("user", user)
+    // console.log("user", user)
 
 
     const handleInput = (e) => {

@@ -9,7 +9,7 @@ import { AdminContext } from "../../App";
 
 const CompanyActionPage = () => {
     const { state } = useContext(AdminContext)
-    console.log("action page state", state?.result)
+    // console.log("action page state", state?.result)
     const [btnLoading, setbtnLoading] = useState(false);
     const { state: location } = useLocation();
     // console.log("location", location)
@@ -67,7 +67,6 @@ const CompanyActionPage = () => {
         tempObj[location.planType].billed = billed
         tempObj[location.planType].userCount = totalUsers
         tempObj[location.planType].endDate = renewalDate
-        console.log(tempObj);
 
         setbtnLoading(true)
         let { data } = await updateProfile(tempObj);

@@ -4,7 +4,7 @@ import group from "../../images/group.png";
 import SearchIcon from "@mui/icons-material/Search";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CircularProgress, Pagination } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -16,21 +16,21 @@ import TableCell from "@mui/material/TableCell";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { MdOutlineSettings } from "react-icons/md";
 import { RxCounterClockwiseClock } from "react-icons/rx";
-// import { PiClockCounterClockwiseFill } from "react-icons/pi";
+import { Dialog, DialogActions, DialogTitle, DialogContent } from "@mui/material";
+import { FaEye } from "react-icons/fa";
+import { BsFillEyeSlashFill } from "react-icons/bs";
 
 import { useRef } from "react";
 import { BsFilterLeft } from "react-icons/bs"
 import { saveToPdf } from "../../utils/saveToPdf";
 import xlsx from "json-as-xlsx";
 import { AdminContext } from "../../App";
-import { getCompany } from "../../api/companyAPI";
-import { getPruchasedPlan } from "../../api/planAPI";
+import { deleteCompany, getCompany } from "../../api/companyAPI";
+import getStateFunc from "../../api/locationAPI";
 
-const PurchasedPlan = () => {
-    // const { state } = useContext(AdminContext)
-    // console.log(state)
-    const { state: location } = useLocation();
-    // console.log("location", location)
+const CompanyListing = () => {
+    const { state } = useContext(AdminContext)
+    // console.log("company listing state:company", state?.result)
     const navigate = useNavigate();
     const [isLoading, setisLoading] = useState(false);
     const pdfView = useRef(null);
@@ -38,8 +38,12 @@ const PurchasedPlan = () => {
     const [exportBtnLoading, setexportBtnLoading] = useState(false)
     const [pdfBtnLoading, setpdfBtnLoading] = useState(false)
 
+    const [allState, setallState] = useState([]);
+    const [selectedState, setselectedState] = useState()
+
     const [search, setSearch] = useState("");
-    const [planType, setPlanType] = useState(location?.planType)
+    const [activeTab, setactiveTab] = useState("SFA ( Sales for Automation )")
+    const [planType, setPlanType] = useState("sfa")
 
     const [allData, setallData] = useState([])
     const [pageCount, setpageCount] = useState(1);
@@ -50,19 +54,18 @@ const PurchasedPlan = () => {
     const [currentGroup, setcurrentGroup] = useState({});
 
     const [filterData, setfilterData] = useState({
-        id: location?.company?._id,
-        type: location?.planType,
         state: "",
         page: pageCount,
         limit: "10",
     })
 
     useEffect(() => {
-        // getStateFunc().then((res) => setallState(res.data.result));
-        getPurchasedPlanFunc({ ...filterData, type: planType })
-    }, [planType]);
-
-
+        // getCompanyFunc({ type: "SFA ( Sales for Automation )" });
+        getStateFunc().then((res) => setallState(res.data.result));
+    }, []);
+    useEffect(() => {
+        if (state) getCompanyFunc({ type: "SFA ( Sales for Automation )" });
+    }, [state]);
     // useEffect(() => {
     //     fetchAllBeatFunc({ ...filterData, page: pageCount });
     // }, [pageCount]);
@@ -78,13 +81,33 @@ const PurchasedPlan = () => {
     // }, [search]);
     // console.log("allData", allData)
 
-    const getPurchasedPlanFunc = async (filterData) => {
-        // setactiveTab(filterData.type);
-        // setPlanType(filterData.type);
+    const getCompanyFunc = async (arg) => {
+        setactiveTab(arg.type);
+        setallData([]);
 
+        let permissionType;
+        if (arg.type === "SFA ( Sales for Automation )") {
+            permissionType = "SFA";
+            arg.type = "sfa";
+            setPlanType("sfa");
+        } else if (arg.type === "DMS ( Distributor Management System )") {
+            permissionType = "DMS";
+            arg.type = "dms";
+            setPlanType("dms");
+        } else if (arg.type === "Lead Managment") {
+            permissionType = "Lead Management";
+            arg.type = "lead_management";
+            setPlanType("lead_management");
+        } else if (arg.type === "Demo Control") {
+            permissionType = "Demo Control";
+            arg.type = "demo_control";
+            setPlanType("Demo Control");
+        }
+        if (state?.result?.role !== "super_admin") if (!state?.result?.permissions.includes(permissionType) || !state?.result?.permissions.includes("View Listing")) return toast.error("Permission required from super admin!")
         setisLoading(true);
-        let { data } = await getPruchasedPlan(filterData);
+        let { data } = await getCompany(arg);
         if (data.status) {
+            data.data.map(user => { user.showPass = false })
             setallData(data.data);
             setpageLength(data.total_pages);
             settotalDataCount(data.total_users);
@@ -93,6 +116,31 @@ const PurchasedPlan = () => {
         }
         setisLoading(false);
     }
+
+    const deleteCompanyFunc = async () => {
+        let { data } = await deleteCompany(currentGroup._id);
+        if (data.status) {
+            toast.success(data.message)
+            getCompanyFunc({ type: "SFA ( Sales for Automation )" })
+        } else {
+            console.log(data.message)
+        }
+        setdeletePopup(false);
+    }
+
+    const passwordToggleFunc = (row) => {
+        if (state?.result?.role !== "super_admin") if (!state?.result?.permissions?.includes('View Password')) return toast.error("Permission is required form super admin!")
+        allData.map(user => {
+            if (user._id === row._id) {
+                user.showPass = !user.showPass
+            }
+        })
+        setallData([...allData])
+    }
+
+    const filterFunc = () => {
+        getCompanyFunc({ type: planType, state: selectedState })
+    };
 
     const filterAndExportFunc = (type) => {
         setTimeout(() => {
@@ -108,59 +156,101 @@ const PurchasedPlan = () => {
         } else if (type === "pdf") {
             setpdfBtnLoading(true)
             setfilterDivExtended(false);
-            // if (allRouts.length < 1) return toast.error("Report list is empty!");
-            // return saveToPdf(pdfView, "Monthly Attendence Report (All Employee)");
+            if (allData.length < 1) return toast.error("list is empty!");
+            return saveToPdf(pdfView, "Company Listing");
         }
     }
 
     // Filter
     const [tableCols, setTableCols] = useState([
         {
-            label: 'Date of Subscription',
-            key: 'planPurchaseDate',
+            label: 'CompanyName',
+            key: 'company_name',
+            type: "company_value",
+            active: true,
+        },
+        {
+            label: 'Company Id',
+            key: 'name',
+            type: "company_code_value",
+            active: true,
+        },
+        {
+            label: 'State',
+            key: 'state',
+            type: "state_value",
+            active: true,
+        },
+        {
+            label: 'City',
+            key: "city",
+            type: "state_value",
+            active: true,
+        },
+        {
+            label: 'Email',
+            key: "email",
             type: "value",
             active: true,
         },
         {
-            label: 'Modul Covered',
-            key: 'features',
-            type: "plan_value",
+            label: 'Password',
+            key: 'password',
+            type: "password_value",
             active: true,
         },
         {
-            label: 'Plan Name',
-            key: 'plan_name',
-            type: "plan_value",
+            label: 'Total Users',
+            key: 'userCount',
+            type: "sfa_vlaue",
+            active: true,
+        },
+        {
+            label: 'Registered User',
+            key: 'registeredUser',
+            type: "value",
+            active: true,
+        },
+        {
+            label: 'Plan Purchased',
+            key: 'features',
+            type: "sfa_plan_vlaue",
             active: true,
         },
         {
             label: 'Plan Amount',
-            key: "totalPayment",
-            type: "value",
+            key: 'totalPayment',
+            type: "sfa_vlaue",
             active: true,
         },
         {
-            label: 'Subscription Start Date',
-            key: "startDate",
-            type: "value",
+            label: 'Period',
+            key: 'durationCount',
+            type: "sfa_vlaue",
             active: true,
         },
         {
-            label: 'Subscription End Date',
+            label: 'Renewal Date',
             key: 'endDate',
-            type: "value",
+            type: "sfa_vlaue",
             active: true,
         },
+        // {
+        //     label: 'Active User',
+        //     key: 'beatName',
+        //     type: "value",
+        //     active: true,
+        // },
+        // {
+        //     label: 'Status',
+        //     key: "status",
+        //     type: "status",
+        //     active: true,
+        // },
         {
-            label: 'Number of Users',
-            key: 'userCount',
-            type: "value",
-            active: true,
-        },
-        {
-            label: 'Billing Frequency',
-            key: 'billing_frequency',
-            type: "plan_value",
+            label: 'Action',
+            key: "abscent",
+            type: "action",
             active: true,
         },
     ]);
@@ -176,9 +266,66 @@ const PurchasedPlan = () => {
 
     const TCComponent = ({ data }) => {
         let { row, col } = data;
-        if (col.type === "plan_value") {
-            if (row?.plan?.[col.key] === "lead_management") return <StyledTableCell>{row?.plan?.[col.key].split("_").join(" ")}</StyledTableCell>;
-            return <StyledTableCell>{row?.plan?.[col.key]}</StyledTableCell>;
+        if (col.type === "action") {
+            return (
+                <StyledTableCell style={{ whiteSpace: "nowrap" }} >
+                    <BorderColorIcon
+                        className="emp_grp_icons"
+                        style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
+                        onClick={() => navigate("#", { state: row })}
+                    />
+                    <DeleteIcon
+                        style={{ fontSize: "1rem", color: "red", marginLeft: "0.5rem", }}
+                        className=" emp_grp_icons"
+                        onClick={() => {
+                            if (state?.result?.role !== "super_admin") if (!state?.result?.permissions.includes("Delete Company")) return toast.error("Permission required from super admin!")
+                            setdeletePopup(true);
+                            setcurrentGroup(row);
+                        }}
+                    />
+                    <MdOutlineSettings
+                        className="emp_grp_icons"
+                        style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
+                        onClick={() => navigate("/company_action_page", { state: { company: row, planType } })}
+                    />
+                    {planType !== "Demo Control" && (
+                        <RxCounterClockwiseClock
+                            className="emp_grp_icons"
+                            style={{ fontSize: "1rem", color: "var(--main-color)", marginLeft: "0.5rem", }}
+                            onClick={() => navigate("/purchased_plan", { state: { company: row, planType } })}
+                        />
+                    )}
+                </StyledTableCell>
+            )
+        } else if (col.type === "password_value") {
+            return (
+                <StyledTableCell style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} >
+                    <span>{row.showPass ? row[col.key] : row[col.key].split("").map(x => x = "*").join("")}</span>
+                    <span>
+                        {row.showPass ? (
+                            <BsFillEyeSlashFill
+                                style={{ margin: "0 0.3rem", fontSize: "1rem", cursor: "pointer", }}
+                                onClick={() => passwordToggleFunc(row)}
+                            />
+                        ) : (
+                            <FaEye
+                                style={{ margin: "0 0.3rem", fontSize: "1rem", cursor: "pointer", }}
+                                onClick={() => passwordToggleFunc(row)}
+                            />
+                        )}
+                    </span>
+                </StyledTableCell>
+            )
+        } else if (col.type === "company_code_value") {
+            return <StyledTableCell>{row.companyShortCode + row.companyShortCode2}</StyledTableCell>;
+        } else if (col.type === "state_value") {
+            return <StyledTableCell>{row[col.key]?.name}</StyledTableCell>;
+        } else if (col.type === "sfa_vlaue") {
+            return <StyledTableCell>{row[planType]?.[col.key]}</StyledTableCell>;
+        } else if (col.type === "sfa_plan_vlaue") {
+            return <StyledTableCell>{row[planType]?.plan?.[col.key]}</StyledTableCell>;
+        } else if (col.type === "company_value") {
+            return <StyledTableCell style={{ position: "sticky", left: 0, zIndex: 100, backgroundColor: "#fff" }} >{row[col.key]}</StyledTableCell>;
         }
         return <StyledTableCell>{row[col.key]}</StyledTableCell>;
     }
@@ -220,7 +367,7 @@ const PurchasedPlan = () => {
                     <div className="icon">
                         <img src={group} alt="icon" />
                     </div>
-                    <div className="title">{location.company?.company_name}</div>
+                    <div className="title">{activeTab}</div>
                 </div>
                 <div className="beat_right">
                     <div className="search">
@@ -236,19 +383,19 @@ const PurchasedPlan = () => {
             </div>
 
             <div className="config_tab">
-                <div onClick={() => setPlanType("sfa")} className={`confi_div ${planType === "sfa" ? "config_active_tab" : ""}`}
+                <div onClick={() => getCompanyFunc({ type: "SFA ( Sales for Automation )" })} className={`confi_div ${activeTab === "SFA ( Sales for Automation )" ? "config_active_tab" : ""}`}
                 >
                     SFA
                 </div>
-                <div onClick={() => setPlanType("dms")} className={`confi_div ${planType === "dms" ? "config_active_tab" : ""}`}
+                <div onClick={() => getCompanyFunc({ type: "DMS ( Distributor Management System )" })} className={`confi_div ${activeTab === "DMS ( Distributor Management System )" ? "config_active_tab" : ""}`}
                 >
                     DMS
                 </div>
-                <div onClick={() => setPlanType("lead_management")} className={`confi_div ${planType === "lead_management" ? "config_active_tab" : ""}`}
+                <div onClick={() => getCompanyFunc({ type: "Lead Managment" })} className={`confi_div ${activeTab === "Lead Managment" ? "config_active_tab" : ""}`}
                 >
                     Lead Managment
                 </div>
-                <div onClick={() => setPlanType("demo_control")} className={`confi_div ${planType === "demo_control" ? "config_active_tab" : ""}`}
+                <div onClick={() => getCompanyFunc({ type: "Demo Control" })} className={`confi_div ${activeTab === "Demo Control" ? "config_active_tab" : ""}`}
                 >
                     Demo Control
                 </div>
@@ -256,28 +403,13 @@ const PurchasedPlan = () => {
 
             <div class="tracking_tabs">
                 <div className="tarcking_tab_left">
-                    {/* <select
-                        name="state"
-                        className="select_btn new_state_select"
-                        onChange={stateHandleInput}
-                        style={{ color: "#000" }}
-                    >
-                        <option value="">All State</option>
+                    <select onChange={(e) => setselectedState(e.target.value)}>
+                        <option value="">Select State</option>
                         {allState?.map((state) => (
                             <option key={state.id} value={state.id}>{state.name}</option>
                         ))}
-                    </select> */}
-                    <select name="" id="">
-                        <option value="">State</option>
-                        <option value="">1</option>
-                        <option value="">2</option>
                     </select>
-                    <select name="" id="">
-                        <option value="">State</option>
-                        <option value="">1</option>
-                        <option value="">2</option>
-                    </select>
-                    <div className="view_btn" /* onClick={() => fetchAllBeatFunc(filterData)}*/ >
+                    <div className="view_btn" onClick={() => filterFunc()} >
                         View
                     </div>
                 </div>
@@ -314,9 +446,9 @@ const PurchasedPlan = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="add_new_side_btn" onClick={() => navigate("/add_beat")}>
+                        {/* <div className="add_new_side_btn" onClick={() => navigate("/add_beat")}>
                             Add New
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div >
@@ -333,7 +465,7 @@ const PurchasedPlan = () => {
                             <TableHead>
                                 <TableRow>
                                     <StyledTableCell>S. No.</StyledTableCell>
-                                    {filterCols?.map(col => <StyledTableCell>{col.label}</StyledTableCell>)}
+                                    {filterCols?.map(col => <StyledTableCell style={{ position: col.label === "CompanyName" && "sticky", left: col.label === "CompanyName" && 0 }} >{col.label}</StyledTableCell>)}
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -370,10 +502,38 @@ const PurchasedPlan = () => {
                         </div>
                     )}
                 </div>
-            )
-            }
+            )}
+
+            <Dialog
+                open={deletePopup}
+                aria-labelledby="form-dialog-title"
+                maxWidth="xs"
+                fullWidth="true"
+                onClose={() => setdeletePopup(false)}
+            >
+                <DialogTitle className="dialog_title">
+                    <div>Do you want to delete {currentGroup.company_name}?</div>
+                </DialogTitle>
+                <DialogContent className="cardpopup_content_delete">
+                    <div style={{ display: "flex", gap: "1rem" }}>
+                        <div
+                            className="employee_gl_popup"
+                            onClick={() => setdeletePopup(false)}
+                        >
+                            Cancel
+                        </div>
+                        <div
+                            className="employee_gl_popup_del"
+                            onClick={() => deleteCompanyFunc()}
+                        >
+                            Delete
+                        </div>
+                    </div>
+                </DialogContent>
+                <DialogActions></DialogActions>
+            </Dialog>
         </>
     )
 }
 
-export default PurchasedPlan
+export default CompanyListing
