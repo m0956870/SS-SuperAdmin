@@ -220,7 +220,7 @@ export default function Home(props) {
                     open={mobileOpen}
                     onClose={handleDrawerToggle}
                     ModalProps={{ keepMounted: true, }}
-                    sx={{ display: { xs: 'block', sm: 'none' }, backgroundColor: "var(--main-color)", '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, transition: "all 0.3s ease-in-out" }, }}
+                    sx={{ display: { xs: 'block', sm: 'none' }, '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, transition: "all 0.3s ease-in-out" }, }}
                 >
                     <Sidebar open={open} />
                 </Drawer>
