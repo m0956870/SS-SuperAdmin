@@ -9,8 +9,9 @@ import { addBanner, editBanner } from '../../api/bannerAPI';
 
 const EditBanner = () => {
     const { state } = useContext(AdminContext);
-    // console.log("create banner state", state)
+    // console.log("edit banner state", state)
     const location = useLocation();
+    console.log("edit banner location", location)
     const navigate = useNavigate();
     const [btnLoading, setbtnLoading] = useState(false);
 
@@ -20,12 +21,14 @@ const EditBanner = () => {
         banner_name: "",
         category_name: "",
         logo_position: "top-left",
+        size: "",
     })
 
     const [error, seterror] = useState({
         banner_name: "",
         category_name: "",
         logo_position: "",
+        size: "",
     })
 
     useEffect(() => {
@@ -34,6 +37,7 @@ const EditBanner = () => {
             banner_name: location.state.banner_name,
             category_name: location.state.category_name,
             logo_position: location.state.logo_position,
+            size: location.state.size,
         })
         setdemoProfilePic(location.state.banner_image)
     }, [])
@@ -58,7 +62,7 @@ const EditBanner = () => {
         else { seterror((prev) => ({ ...prev, category_name: "" })); }
         if (user.logo_position === "") { seterror((prev) => ({ ...prev, logo_position: "Logo position is required!" })); err = true; }
         else { seterror((prev) => ({ ...prev, logo_position: "" })); }
-        if (!profilePic) return toast.error("Image is required!")
+        // if (!profilePic) return toast.error("Image is required!")
         if (err) return;
 
         setbtnLoading(true)
@@ -141,14 +145,27 @@ const EditBanner = () => {
                             <option value="bottom-left">Bottom-Left</option>
                         </select>
                         {/* <input
-              type="text"
-              name="logo_position"
-              value={user.logo_position}
-              onChange={handleInput}
-            /> */}
+                            type="text"
+                            name="logo_position"
+                            value={user.logo_position}
+                            onChange={handleInput}
+                            /> */}
                         <div>
                             {error.logo_position.length !== 0 && (
                                 <div className="input_error" >{error.logo_position}</div>
+                            )}
+                        </div>
+                    </div>
+                    <div className="input_group">
+                        <label>Size</label>
+                        <select name="size" className='select' value={user.size} onChange={handleInput} >
+                            <option value="1.91:1">Facebook</option>
+                            <option value="1:1">Instagram</option>
+                            <option value="16:9">Banner</option>
+                        </select>
+                        <div>
+                            {error.size.length !== 0 && (
+                                <div className="input_error" >{error.size}</div>
                             )}
                         </div>
                     </div>

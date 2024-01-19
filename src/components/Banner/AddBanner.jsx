@@ -20,12 +20,14 @@ const AddBanner = () => {
     banner_name: "",
     category_name: "",
     logo_position: "top-left",
+    size: "",
   })
 
   const [error, seterror] = useState({
     banner_name: "",
     category_name: "",
     logo_position: "",
+    size: "",
   })
 
   const handleInput = (e) => {
@@ -46,20 +48,31 @@ const AddBanner = () => {
     else { seterror((prev) => ({ ...prev, banner_name: "" })); }
     if (user.category_name === "") { seterror((prev) => ({ ...prev, category_name: "Category name is required!" })); err = true; }
     else { seterror((prev) => ({ ...prev, category_name: "" })); }
+    if (user.size === "") { seterror((prev) => ({ ...prev, size: "Size is required!" })); err = true; }
+    else { seterror((prev) => ({ ...prev, size: "" })); }
     if (user.logo_position === "") { seterror((prev) => ({ ...prev, logo_position: "Logo position is required!" })); err = true; }
     else { seterror((prev) => ({ ...prev, logo_position: "" })); }
     if (!profilePic) return toast.error("Image is required!")
     if (err) return;
 
-    setbtnLoading(true)
-    let { data } = await addBanner({ ...user, profilePic })
-    if (data.status) {
-      navigate("/banner")
-      toast.success(data.message)
-    } else {
-      toast.error(data.message)
+    let sizeArr = user.size.split(":")
+    let img = new Image()
+    img.src = URL.createObjectURL(profilePic)
+    img.onload = async () => {
+      if (sizeArr[0] < Number(img.width / img.height).toFixed(2) && sizeArr[1] > Number(img.width / img.height).toFixed(2)) {
+        setbtnLoading(true)
+        let { data } = await addBanner({ ...user, profilePic })
+        if (data.status) {
+          navigate("/banner")
+          toast.success(data.message)
+        } else {
+          toast.error(data.message)
+        }
+        setbtnLoading(false)
+      } else {
+        return toast.error("Invalid size!");
+      }
     }
-    setbtnLoading(false)
   }
 
   return (
@@ -142,11 +155,24 @@ const AddBanner = () => {
               )}
             </div>
           </div>
+          <div className="input_group">
+            <label>Size</label>
+            <select name="size" className='select' onChange={handleInput} >
+              <option value="1.91:1">Facebook</option>
+              <option value="1:1">Instagram</option>
+              <option value="16:9">Banner</option>
+            </select>
+            <div>
+              {error.size.length !== 0 && (
+                <div className="input_error" >{error.size}</div>
+              )}
+            </div>
+          </div>
         </div>
         <div className="btn changepass_btn" onClick={() => !btnLoading && addBannerFunc()} >
           {btnLoading ? <CircularProgress style={{ color: "#fff" }} /> : "ADD BANNER"}
         </div>
-      </div>
+      </div >
     </>
   )
 }
