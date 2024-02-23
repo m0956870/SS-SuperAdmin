@@ -20,7 +20,7 @@ const AddBanner = () => {
     banner_name: "",
     category_name: "",
     logo_position: "top-left",
-    size: "",
+    size: "1.91:1",
   })
 
   const [error, seterror] = useState({
@@ -59,7 +59,10 @@ const AddBanner = () => {
     let img = new Image()
     img.src = URL.createObjectURL(profilePic)
     img.onload = async () => {
-      if (sizeArr[0] < Number(img.width / img.height).toFixed(2) && sizeArr[1] > Number(img.width / img.height).toFixed(2)) {
+      let ratio = (img.width / img.height * 100 | 0) / 100;
+      let minExpRatio = (img.width / img.height * 10 | 0) / 10;
+      let maxExpRatio = (img.width / img.height).toFixed(1);
+      if (ratio > minExpRatio && ratio < maxExpRatio) {
         setbtnLoading(true)
         let { data } = await addBanner({ ...user, profilePic })
         if (data.status) {
@@ -68,9 +71,10 @@ const AddBanner = () => {
         } else {
           toast.error(data.message)
         }
-        setbtnLoading(false)
+       return setbtnLoading(false)
       } else {
-        return toast.error("Invalid size!");
+        setbtnLoading(false)
+        return toast.error(`Invalid image ratio! optimal ratio is ${user.size}`);
       }
     }
   }
@@ -158,9 +162,9 @@ const AddBanner = () => {
           <div className="input_group">
             <label>Size</label>
             <select name="size" className='select' onChange={handleInput} >
-              <option value="1.91:1">Facebook</option>
-              <option value="1:1">Instagram</option>
-              <option value="16:9">Banner</option>
+              <option value="1.91:1">Facebook (1.91:1)</option>
+              <option value="1:1">Instagram (1:1)</option>
+              <option value="16:9">Banner (16:9)</option>
             </select>
             <div>
               {error.size.length !== 0 && (
