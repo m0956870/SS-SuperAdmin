@@ -59,19 +59,19 @@ const AddBanner = () => {
     let img = new Image()
     img.src = URL.createObjectURL(profilePic)
     img.onload = async () => {
-      let ratio = (img.width / img.height * 100 | 0) / 100;
-      let minExpRatio = (img.width / img.height * 10 | 0) / 10;
+      let ratio = sizeArr[0] / sizeArr[1];
+      let minExpRatio = (img.width / img.height * 10 | 0) / 10  ;
       let maxExpRatio = (img.width / img.height).toFixed(1);
-      if (ratio > minExpRatio && ratio < maxExpRatio) {
+      if (ratio >= minExpRatio && ratio <= maxExpRatio) {
         setbtnLoading(true)
-        let { data } = await addBanner({ ...user, profilePic })
+        let { data } = await addBanner({ ...user, profilePic, banner_height: img.height, banner_width: img.width })
         if (data.status) {
           navigate("/banner")
           toast.success(data.message)
         } else {
           toast.error(data.message)
         }
-       return setbtnLoading(false)
+        return setbtnLoading(false)
       } else {
         setbtnLoading(false)
         return toast.error(`Invalid image ratio! optimal ratio is ${user.size}`);

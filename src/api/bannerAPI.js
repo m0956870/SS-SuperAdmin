@@ -24,6 +24,8 @@ export const addBanner = async (obj) => {
     fd.append("category_name", obj.category_name)
     fd.append("logo_position", obj.logo_position)
     fd.append("banner_image", obj.profilePic)
+    fd.append("banner_height", obj.banner_height)
+    fd.append("banner_width", obj.banner_width)
     fd.append("size", obj.size)
 
     let config = {
