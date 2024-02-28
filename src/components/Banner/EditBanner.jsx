@@ -65,13 +65,38 @@ const EditBanner = () => {
         // if (!profilePic) return toast.error("Image is required!")
         if (err) return;
 
-        setbtnLoading(true)
-        let { data } = await editBanner({ ...user, profilePic })
-        if (data.status) {
-            navigate("/banner")
-            toast.success(data.message)
+        if (profilePic) {
+            let sizeArr = user.size.split(":")
+            let img = new Image()
+            img.src = URL.createObjectURL(profilePic)
+            img.onload = async () => {
+                let ratio = sizeArr[0] / sizeArr[1];
+                let minExpRatio = (img.width / img.height * 10 | 0) / 10;
+                let maxExpRatio = (img.width / img.height).toFixed(1);
+                if (ratio >= minExpRatio && ratio <= maxExpRatio) {
+                    setbtnLoading(true)
+                    let { data } = await editBanner({ ...user, profilePic })
+                    if (data.status) {
+                        navigate("/banner")
+                        toast.success(data.message)
+                    } else {
+                        toast.error(data.message)
+                    }
+                    setbtnLoading(false)
+                } else {
+                    setbtnLoading(false)
+                    return toast.error(`Invalid image ratio! optimal ratio is ${user.size}`);
+                }
+            }
         } else {
-            toast.error(data.message)
+            setbtnLoading(true)
+            let { data } = await editBanner({ ...user, profilePic })
+            if (data.status) {
+                navigate("/banner")
+                toast.success(data.message)
+            } else {
+                toast.error(data.message)
+            }
         }
         setbtnLoading(false)
     }
@@ -159,9 +184,9 @@ const EditBanner = () => {
                     <div className="input_group">
                         <label>Size</label>
                         <select name="size" className='select' value={user.size} onChange={handleInput} >
-                            <option value="1.91:1">Facebook</option>
-                            <option value="1:1">Instagram</option>
-                            <option value="16:9">Banner</option>
+                            <option value="1.91:1">Facebook (1.91:1)</option>
+                            <option value="1:1">Instagram (1:1)</option>
+                            <option value="16:9">Banner (16:9)</option>
                         </select>
                         <div>
                             {error.size.length !== 0 && (
